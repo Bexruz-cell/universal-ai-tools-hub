@@ -10,7 +10,9 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import queue
 import sys
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -692,17 +694,28 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
 # Model Context Protocol JSON-RPC 2.0 Stdio Server
 # ==============================================================================
 
-async def run_stdio_server():
+def run_stdio_server():
     """Cross-platform Model Context Protocol (MCP) JSON-RPC 2.0 stdio server.
 
-    Uses threaded readline to guarantee non-blocking execution across Windows, Linux, and macOS
-    without IOCP handle errors or pipe buffering deadlocks.
+    A dedicated daemon reader owns blocking stdin reads. The transport loop stays
+    synchronous, while individual async tool calls use a short-lived asyncio loop;
+    this avoids Windows pipe shutdown hangs caused by asyncio waiting on stdin.
     """
-    loop = asyncio.get_running_loop()
+    input_queue: queue.Queue[str | None] = queue.Queue()
+
+    def read_stdin() -> None:
+        try:
+            for input_line in sys.stdin:
+                input_queue.put(input_line)
+        finally:
+            input_queue.put(None)
+
+    reader = threading.Thread(target=read_stdin, name="mcp-stdin-reader", daemon=True)
+    reader.start()
 
     while True:
-        line = await loop.run_in_executor(None, sys.stdin.readline)
-        if not line:
+        line = input_queue.get()
+        if line is None:
             break
 
         text = line.strip()
@@ -752,7 +765,7 @@ async def run_stdio_server():
             tool_name = params.get("name")
             tool_args = params.get("arguments", {})
             try:
-                content_text = await handle_call_tool(tool_name, tool_args)
+                content_text = asyncio.run(handle_call_tool(tool_name, tool_args))
                 resp = {
                     "jsonrpc": "2.0",
                     "id": msg_id,
@@ -781,7 +794,7 @@ async def run_stdio_server():
 
 def main():
     """CLI entrypoint for MCP stdio server."""
-    asyncio.run(run_stdio_server())
+    run_stdio_server()
 
 
 if __name__ == "__main__":
