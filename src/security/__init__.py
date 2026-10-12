@@ -17,6 +17,7 @@ from src.security.command_guard import (
     CommandExecutionTimeout,
     DisallowedExecutableError,
 )
+from src.security.workspace_policy import WorkspaceAuthorizationError, WorkspacePolicy
 
 __all__ = [
     "PathGuard",
@@ -27,4 +28,7 @@ __all__ = [
     "CommandSecurityError",
     "CommandExecutionTimeout",
     "DisallowedExecutableError",
+    "WorkspacePolicy",
+    "WorkspaceAuthorizationError",
 ]
+
