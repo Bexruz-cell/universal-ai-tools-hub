@@ -16,7 +16,8 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Development & Workflow",
-      "description": "Universal AI tool bridge for Codex, Antigravity, Claude, and ChatGPT. Features 15 autonomous coding tools (safe patcher, test runner, symbol extraction, AST search, repo map, dependency graph, Git checkpoints, traceback diagnostics, context optimizer, security guards) plus deep search, web scraping with SSRF protection, YouTube transcripts, math calculator, crypto prices, currency converter, and the 2026 Top-50 Coding Repositories Catalog."
+      "description": "Universal AI Coding Hub 2.1.0 for MCP-compatible coding clients. Provides 15 real coding tools with deny-by-default workspace authorization: repository mapping, code search, symbols, references, dependencies, safe patching, tests, verification, context optimization, token estimation, Git checkpoints, diagnostics, documentation, and coding catalog search."
     }
   ]
 }
+

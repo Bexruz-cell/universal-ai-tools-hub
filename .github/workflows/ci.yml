@@ -139,3 +139,30 @@ jobs:
           PYTHONPATH: .
           PYTHONUNBUFFERED: "1"
           PYTHONUTF8: "1"
+
+  security-regression:
+    name: Workspace Isolation Regression
+    needs: validate-schemas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pytest pytest-asyncio
+
+      - name: Run synthetic workspace-boundary tests
+        run: python -m pytest tests/test_workspace_policy.py -q
+        env:
+          PYTHONPATH: .
+          PYTHONUNBUFFERED: "1"
+          PYTHONUTF8: "1"
+
