@@ -1,13 +1,9 @@
 """Automated verification suite for Codex plugin marketplace operations.
 
-Validates the local marketplace manifest (.agents/plugins/marketplace.json)
-and exercises real CLI operations with codex.exe:
-- Marketplace manifest schema, encoding (no BOM), and file integrity
-- codex plugin marketplace add . --json
-- codex plugin marketplace list
-- codex plugin add omnitools-bridge@universal-ai-tools-hub
-- Cache directory inspection (~/.codex/plugins/cache/universal-ai-tools-hub/omnitools-bridge)
-- codex plugin remove omnitools-bridge@universal-ai-tools-hub and cleanup verification
+Validates the local marketplace manifest (.agents/plugins/marketplace.json) statically
+and exercises real CLI operations with codex/codex.exe when available:
+- Static: Marketplace manifest schema, encoding (no BOM), and file integrity (always runs on CI)
+- Live CLI: codex --version, marketplace add/list, plugin add/remove lifecycle (skipped if codex not in PATH)
 """
 
 import json
@@ -15,7 +11,9 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
+from typing import Optional
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -30,8 +28,12 @@ CODEX_CACHE_DIR = (
 )
 
 
-def find_codex_binary() -> str:
-    """Locate codex executable in PATH or standard user installation locations."""
+def find_codex_binary() -> Optional[str]:
+    """Locate codex executable in PATH or standard user installation locations.
+
+    Returns:
+        Path to codex executable as string if found, or None if not installed / not in PATH.
+    """
     which_path = shutil.which("codex") or shutil.which("codex.exe")
     if which_path:
         return which_path
@@ -40,17 +42,28 @@ def find_codex_binary() -> str:
     local_app_data = os.environ.get("LOCALAPPDATA", "")
     if local_app_data:
         fallback = Path(local_app_data) / "Programs" / "OpenAI" / "Codex" / "bin" / "codex.exe"
-        if fallback.exists():
+        if fallback.is_file():
             return str(fallback)
 
-    return "codex"
+    return None
 
 
 CODEX_BIN = find_codex_binary()
+HAS_CODEX = CODEX_BIN is not None
+
+skip_without_codex = pytest.mark.skipif(
+    not HAS_CODEX,
+    reason="codex or codex.exe CLI executable not found in PATH or standard install locations",
+)
 
 
 def run_codex_cmd(args: list[str], timeout: int = 30) -> subprocess.CompletedProcess:
     """Helper to execute codex CLI commands from the repository root."""
+    if not CODEX_BIN:
+        raise RuntimeError(
+            "run_codex_cmd called when CODEX_BIN is None. "
+            "Ensure live CLI tests are guarded with @skip_without_codex."
+        )
     cmd = [CODEX_BIN] + args
     return subprocess.run(
         cmd,
@@ -62,9 +75,10 @@ def run_codex_cmd(args: list[str], timeout: int = 30) -> subprocess.CompletedPro
     )
 
 
-# ---------------------------------------------------------------------------
-# Test 1: Marketplace Manifest Validation
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# Section 1: Static Manifest Schema & Integrity Tests (CI-Safe, No Codex Needed)
+# ===========================================================================
+
 def test_marketplace_manifest_exists_and_valid_json():
     """Verify that .agents/plugins/marketplace.json exists, has no UTF-8 BOM, and is valid JSON."""
     assert MARKETPLACE_MANIFEST.is_file(), (
@@ -101,38 +115,59 @@ def test_marketplace_manifest_exists_and_valid_json():
     )
     assert len(manifest["plugins"]) > 0, "Manifest 'plugins' list is empty"
 
-    # Validate omnitools-bridge plugin entry
-    bridge_plugin = next(
-        (p for p in manifest["plugins"] if p.get("name") == "omnitools-bridge"),
-        None,
-    )
-    assert bridge_plugin is not None, (
-        "omnitools-bridge plugin entry not found in marketplace manifest"
-    )
 
-    # Validate source path resolves to existing directory
-    source = bridge_plugin.get("source", {})
-    assert source.get("source") == "local", "Plugin source must be 'local'"
-    plugin_rel_path = source.get("path")
-    assert plugin_rel_path, "Plugin source.path must not be empty"
+def test_marketplace_manifest_plugins_schema_and_disk_files():
+    """Verify each plugin entry schema and ensure local source paths and required files exist on disk."""
+    assert MARKETPLACE_MANIFEST.is_file(), f"Missing manifest: {MARKETPLACE_MANIFEST}"
+    manifest = json.loads(MARKETPLACE_MANIFEST.read_text(encoding="utf-8"))
 
-    plugin_abs_path = (REPO_ROOT / plugin_rel_path).resolve()
-    assert plugin_abs_path.is_dir(), (
-        f"Plugin source path does not exist on disk: {plugin_abs_path}"
-    )
+    for plugin in manifest.get("plugins", []):
+        plugin_name = plugin.get("name")
+        assert plugin_name, f"Plugin missing 'name' attribute: {plugin}"
+        assert plugin.get("displayName"), f"Plugin '{plugin_name}' missing displayName"
+        assert plugin.get("description"), f"Plugin '{plugin_name}' missing description"
+        assert plugin.get("category"), f"Plugin '{plugin_name}' missing category"
+        assert plugin.get("policy"), f"Plugin '{plugin_name}' missing policy"
 
-    # Validate core plugin metadata
-    assert bridge_plugin.get("displayName"), "Plugin displayName missing"
-    assert bridge_plugin.get("description"), "Plugin description missing"
-    assert bridge_plugin.get("category"), "Plugin category missing"
-    assert bridge_plugin.get("policy"), "Plugin policy missing"
+        source = plugin.get("source", {})
+        assert source.get("source") == "local", (
+            f"Plugin '{plugin_name}' source must be 'local', got {source.get('source')}"
+        )
+        plugin_rel_path = source.get("path")
+        assert plugin_rel_path, f"Plugin '{plugin_name}' source.path must not be empty"
+
+        plugin_abs_path = (REPO_ROOT / plugin_rel_path).resolve()
+        assert plugin_abs_path.is_dir(), (
+            f"Plugin source path does not exist on disk: {plugin_abs_path}"
+        )
+
+        # Validate core plugin manifest and entrypoints
+        has_plugin_json = (
+            (plugin_abs_path / "plugin.json").is_file()
+            or (plugin_abs_path / ".codex-plugin" / "plugin.json").is_file()
+        )
+        assert has_plugin_json, (
+            f"Plugin '{plugin_name}' missing plugin.json at {plugin_abs_path}"
+        )
+
+        assert (plugin_abs_path / "run_mcp.py").is_file(), (
+            f"Plugin '{plugin_name}' missing run_mcp.py at {plugin_abs_path}"
+        )
+        assert (plugin_abs_path / "skills").is_dir(), (
+            f"Plugin '{plugin_name}' missing skills directory at {plugin_abs_path}"
+        )
+        assert (plugin_abs_path / "src" / "core" / "tools.py").is_file(), (
+            f"Plugin '{plugin_name}' missing src/core/tools.py at {plugin_abs_path}"
+        )
 
 
-# ---------------------------------------------------------------------------
-# Test 2: Codex CLI Availability
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# Section 2: Live Codex CLI Tests (Skipped Gracefully if Codex is Absent)
+# ===========================================================================
+
+@skip_without_codex
 def test_codex_cli_available():
-    """Verify that codex.exe executable is available and responds to version query."""
+    """Verify that codex executable is available and responds to version query."""
     res = run_codex_cmd(["--version"])
     assert res.returncode == 0, (
         f"Failed to execute '{CODEX_BIN} --version': {res.stderr}"
@@ -142,18 +177,20 @@ def test_codex_cli_available():
     )
 
 
-# ---------------------------------------------------------------------------
-# Test 3: codex plugin marketplace add . --json
-# ---------------------------------------------------------------------------
+@skip_without_codex
 def test_codex_marketplace_add_json():
     """Verify that 'codex plugin marketplace add . --json' returns valid JSON and succeeds."""
     res = run_codex_cmd(["plugin", "marketplace", "add", ".", "--json"])
+    # If already registered from an old/different path, clean and re-add
+    if res.returncode != 0 and "already added from a different source" in (res.stderr + res.stdout):
+        run_codex_cmd(["plugin", "marketplace", "remove", "universal-ai-tools-hub"])
+        res = run_codex_cmd(["plugin", "marketplace", "add", ".", "--json"])
+
     assert res.returncode == 0, (
         f"codex plugin marketplace add . --json failed with code {res.returncode}:\n"
         f"STDOUT: {res.stdout}\nSTDERR: {res.stderr}"
     )
 
-    # Parse JSON output from CLI
     try:
         data = json.loads(res.stdout)
     except json.JSONDecodeError as exc:
@@ -170,9 +207,7 @@ def test_codex_marketplace_add_json():
     )
 
 
-# ---------------------------------------------------------------------------
-# Test 4: codex plugin marketplace list
-# ---------------------------------------------------------------------------
+@skip_without_codex
 def test_codex_marketplace_list():
     """Verify that 'codex plugin marketplace list' lists universal-ai-tools-hub."""
     res = run_codex_cmd(["plugin", "marketplace", "list"])
@@ -187,9 +222,7 @@ def test_codex_marketplace_list():
     )
 
 
-# ---------------------------------------------------------------------------
-# Test 5 & 6: Codex Plugin Install, Cache Verification, and Removal Lifecycle
-# ---------------------------------------------------------------------------
+@skip_without_codex
 def test_codex_plugin_install_cache_and_remove_lifecycle():
     """Full end-to-end lifecycle verification:
     1. Clean state pre-check / remove previous installation
@@ -202,8 +235,7 @@ def test_codex_plugin_install_cache_and_remove_lifecycle():
     plugin_spec = "omnitools-bridge@universal-ai-tools-hub"
 
     # Pre-clean: Ensure plugin is not already installed from a previous partial run
-    pre_clean = run_codex_cmd(["plugin", "remove", plugin_spec])
-    # Note: pre_clean may return non-zero if not installed; that is acceptable
+    run_codex_cmd(["plugin", "remove", plugin_spec])
 
     try:
         # Step 1: Install plugin
@@ -232,7 +264,6 @@ def test_codex_plugin_install_cache_and_remove_lifecycle():
         installed_root = version_dirs[0]
 
         # Step 3: Inspect installed files inside cached version directory
-        # Required files: plugin.json or .codex-plugin/plugin.json, run_mcp.py, skills, src
         has_plugin_manifest = (
             (installed_root / "plugin.json").is_file()
             or (installed_root / ".codex-plugin" / "plugin.json").is_file()
@@ -258,14 +289,12 @@ def test_codex_plugin_install_cache_and_remove_lifecycle():
 
     finally:
         # Step 4: Removal and cleanup (guaranteed execution)
-        import time, shutil
         time.sleep(0.2)
         remove_res = run_codex_cmd(["plugin", "remove", plugin_spec])
-        # If removal returns 0 or cache already unlinked, verify/clean cache dir
         if remove_res.returncode != 0:
             time.sleep(0.5)
             remove_res = run_codex_cmd(["plugin", "remove", plugin_spec])
-        
+
         if CODEX_CACHE_DIR.exists():
             shutil.rmtree(CODEX_CACHE_DIR, ignore_errors=True)
         assert not CODEX_CACHE_DIR.exists(), (
@@ -273,6 +302,7 @@ def test_codex_plugin_install_cache_and_remove_lifecycle():
         )
 
 
+@skip_without_codex
 def test_persist_plugin_installation_ready_state():
     """Ensure plugin is installed and ready in Codex cache after test suite runs."""
     plugin_spec = "omnitools-bridge@universal-ai-tools-hub"
@@ -288,6 +318,9 @@ def test_persist_plugin_installation_ready_state():
 # Standalone CLI entrypoint
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    print(f"[QA] Running Codex Install Verification Suite via {CODEX_BIN}...")
+    if HAS_CODEX:
+        print(f"[QA] Running Codex Verification Suite (Live CLI via {CODEX_BIN})...")
+    else:
+        print("[QA] Running Codex Verification Suite (Static manifest tests only, CLI not in PATH)...")
     exit_code = pytest.main(["-v", __file__])
     sys.exit(exit_code)

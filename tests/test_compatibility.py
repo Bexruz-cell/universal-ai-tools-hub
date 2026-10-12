@@ -54,10 +54,13 @@ def test_claude_desktop_mcp_handshake():
     server_conf = data["mcpServers"]["omnitools_bridge"]
     
     script_path = server_conf["args"][0]
-    assert Path(script_path).exists(), f"Claude MCP server script not found: {script_path}"
+    target_script = Path(script_path)
+    if not target_script.is_absolute():
+        target_script = Path(__file__).resolve().parent.parent / script_path
+    assert target_script.exists(), f"Claude MCP server script not found: {target_script}"
     
     proc = subprocess.Popen(
-        [sys.executable, script_path],
+        [sys.executable, str(target_script)],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

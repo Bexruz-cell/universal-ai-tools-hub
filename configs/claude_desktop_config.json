@@ -3,7 +3,7 @@
     "omnitools_bridge": {
       "command": "python",
       "args": [
-        "C:\\Users\\soul\\Documents\\analyzer\\src\\adapters\\mcp_adapter.py"
+        "src/adapters/mcp_adapter.py"
       ],
       "env": {
         "PYTHONIOENCODING": "utf-8"
@@ -12,7 +12,7 @@
     "omnitools-hub": {
       "command": "python",
       "args": [
-        "C:\\Users\\soul\\Documents\\analyzer\\src\\adapters\\mcp_adapter.py"
+        "src/adapters/mcp_adapter.py"
       ],
       "env": {
         "PYTHONIOENCODING": "utf-8"

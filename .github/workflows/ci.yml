@@ -24,11 +24,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
 
       - name: Install validation dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyyaml jsonschema
+          python -m pip install pyyaml jsonschema
 
       - name: Validate JSON and YAML schemas
         run: |
@@ -39,21 +41,32 @@ jobs:
           import yaml
 
           target_files = [
-              (".agents/plugins/marketplace.json", "json"),
-              ("plugins/omnitools-bridge/plugin.json", "json"),
+              (".agents/plugins/marketplace.json", "marketplace"),
+              ("plugins/omnitools-bridge/plugin.json", "plugin_json"),
+              ("plugins/omnitools-bridge/.codex-plugin/plugin.json", "plugin_json"),
+              ("plugin.json", "antigravity_manifest"),
+              (".well-known/ai-plugin.json", "chatgpt_manifest"),
+              ("configs/claude_desktop_config.json", "claude_config"),
               ("openapi.json", "openapi_json"),
               ("openapi.yaml", "openapi_yaml"),
+              ("server/openapi.json", "openapi_json"),
+              ("server/openapi.yaml", "openapi_yaml"),
           ]
 
           errors = []
           for rel_path, kind in target_files:
               p = Path(rel_path)
-              if not p.exists():
+              if not p.is_file():
                   errors.append((rel_path, "File does not exist"))
                   continue
               try:
-                  content = p.read_text(encoding="utf-8")
-                  if "json" in kind:
+                  raw_bytes = p.read_bytes()
+                  if raw_bytes.startswith(b"\xef\xbb\xbf"):
+                      errors.append((rel_path, "Illegal UTF-8 BOM detected"))
+                      continue
+
+                  content = raw_bytes.decode("utf-8")
+                  if rel_path.endswith(".json"):
                       data = json.loads(content)
                   else:
                       data = yaml.safe_load(content)
@@ -62,11 +75,19 @@ jobs:
                       assert "openapi" in data, f"Missing 'openapi' field in {rel_path}"
                       assert "info" in data, f"Missing 'info' in {rel_path}"
                       assert "paths" in data, f"Missing 'paths' in {rel_path}"
-                  if "marketplace" in rel_path:
+                  if kind == "marketplace":
                       assert "name" in data, f"Missing 'name' in {rel_path}"
                       assert "plugins" in data, f"Missing 'plugins' in {rel_path}"
-                  if "plugin.json" in rel_path:
+                  if kind == "plugin_json":
                       assert "name" in data, f"Missing 'name' in {rel_path}"
+                  if kind == "antigravity_manifest":
+                      assert "$schema" in data, f"Missing '$schema' in {rel_path}"
+                      assert "skills" in data, f"Missing 'skills' in {rel_path}"
+                  if kind == "chatgpt_manifest":
+                      assert "schema_version" in data, f"Missing 'schema_version' in {rel_path}"
+                  if kind == "claude_config":
+                      assert "mcpServers" in data, f"Missing 'mcpServers' in {rel_path}"
+
                   print(f"Validated: {rel_path}")
               except Exception as exc:
                   errors.append((rel_path, str(exc)))
@@ -76,12 +97,16 @@ jobs:
               for f, err in errors:
                   print(f"  - {f}: {err}", file=sys.stderr)
               sys.exit(1)
-          print("All schemas validated successfully.")
+          print("All schemas and specifications validated successfully.")
           EOF
 
   test:
     name: Test (${{ matrix.os }} / Python ${{ matrix.python-version }})
+    needs: validate-schemas
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -96,17 +121,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
 
       - name: Install dependencies
-        shell: bash
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
+            python -m pip install -r requirements.txt
           fi
+          python -m pip install pytest pytest-asyncio
 
       - name: Run test suite
         run: |
-          pytest tests/ -v
+          python -m pytest tests/ -v
         env:
           PYTHONPATH: .
+          PYTHONUNBUFFERED: "1"
+          PYTHONUTF8: "1"
