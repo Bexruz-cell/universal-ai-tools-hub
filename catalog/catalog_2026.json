@@ -1,0 +1,352 @@
+[
+  {
+    "id": 1,
+    "name": "OpenAI Cookbook",
+    "github_url": "https://github.com/openai/openai-cookbook",
+    "description": "официальная библиотека примеров использования OpenAI API, включая GPT Actions",
+    "use_case": "можно взять готовые схемы для Google Calendar, GitHub и других сервисов, адаптировать авторизацию и подключить их к Custom GPT"
+  },
+  {
+    "id": 2,
+    "name": "GPT Actions Orchestrator",
+    "github_url": "https://github.com/hmlendea/gpt-actions-orchestrator",
+    "description": "HTTP-сервис на .NET, маршрутизирующий вызовы GPT Actions к внешним API",
+    "use_case": "позволяет организовать несколько интеграций за одним серверным endpoint вместо написания отдельного backend для каждого действия"
+  },
+  {
+    "id": 3,
+    "name": "APIs.guru OpenAPI Directory",
+    "github_url": "https://github.com/APIs-guru/openapi-directory",
+    "description": "регулярно обновляемая коллекция OpenAPI-описаний публичных веб-сервисов",
+    "use_case": "находить готовые API-спецификации и адаптировать нужные методы под Actions или собственные инструменты ChatGPT"
+  },
+  {
+    "id": 4,
+    "name": "Microsoft Power Platform Connectors",
+    "github_url": "https://github.com/microsoft/PowerPlatformConnectors",
+    "description": "большая библиотека шаблонов и спецификаций коннекторов для Microsoft Power Platform",
+    "use_case": "использовать существующие описания HTTP-операций как основу для интеграций ChatGPT, предварительно адаптировав формат и OAuth"
+  },
+  {
+    "id": 5,
+    "name": "OpenAI OpenAPI",
+    "github_url": "https://github.com/openai/openai-openapi",
+    "description": "официальная машиночитаемая спецификация OpenAI REST API в формате OpenAPI 3.1",
+    "use_case": "генерировать клиентов, изучать структуру запросов и строить собственный совместимый API-шлюз"
+  },
+  {
+    "id": 6,
+    "name": "Swagger Editor",
+    "github_url": "https://github.com/swagger-api/swagger-editor",
+    "description": "визуальный редактор спецификаций OpenAPI",
+    "use_case": "писать, исправлять и проверять YAML/JSON-схемы до подключения к GPT Actions"
+  },
+  {
+    "id": 7,
+    "name": "Redocly CLI",
+    "github_url": "https://github.com/Redocly/redocly-cli",
+    "description": "инструмент проверки, объединения, тестирования и документирования OpenAPI",
+    "use_case": "автоматически проверять схемы Actions, устранять ошибки контрактов и объединять спецификации в один файл"
+  },
+  {
+    "id": 8,
+    "name": "Stoplight Spectral",
+    "github_url": "https://github.com/stoplightio/spectral",
+    "description": "линтер для JSON, YAML и OpenAPI с настраиваемыми правилами",
+    "use_case": "встроить в CI проверку корректности схем, описаний параметров и требований к авторизации"
+  },
+  {
+    "id": 9,
+    "name": "OpenAPI Generator",
+    "github_url": "https://github.com/OpenAPITools/openapi-generator",
+    "description": "генератор программных клиентов, серверных заготовок и документации по OpenAPI",
+    "use_case": "быстро создавать backend и API-клиенты для интеграции с ChatGPT"
+  },
+  {
+    "id": 10,
+    "name": "Scalar",
+    "github_url": "https://github.com/scalar/scalar",
+    "description": "платформа для документации API и выполнения HTTP-запросов",
+    "use_case": "визуально тестировать endpoints и проверять реальные ответы перед предоставлением инструментов AI-агенту"
+  },
+  {
+    "id": 11,
+    "name": "Firecrawl",
+    "github_url": "https://github.com/firecrawl/firecrawl",
+    "description": "извлекает содержимое веб-страниц и сайтов в удобных для LLM форматах, включая Markdown",
+    "use_case": "создать для ChatGPT инструмент чтения сайтов, сбора документации и исследования конкурентов через API"
+  },
+  {
+    "id": 12,
+    "name": "Crawl4AI",
+    "github_url": "https://github.com/unclecode/crawl4ai",
+    "description": "открытый веб-краулер, подготавливающий контент сайтов для языковых моделей",
+    "use_case": "собирать актуальные данные локально или на сервере для собственного поискового агента"
+  },
+  {
+    "id": 13,
+    "name": "ScrapeGraphAI",
+    "github_url": "https://github.com/ScrapeGraphAI/Scrapegraph-ai",
+    "description": "Python-фреймворк для извлечения структурированных данных с сайтов при помощи LLM",
+    "use_case": "получать конкретные поля (цены, названия, характеристики) вместо полного HTML"
+  },
+  {
+    "id": 14,
+    "name": "Crawlee",
+    "github_url": "https://github.com/apify/crawlee",
+    "description": "библиотека создания надёжных веб-краулеров на JavaScript и TypeScript",
+    "use_case": "организовать регулярный сбор информации и передавать результат в ChatGPT через API"
+  },
+  {
+    "id": 15,
+    "name": "Scrapy",
+    "github_url": "https://github.com/scrapy/scrapy",
+    "description": "производительный Python-фреймворк для веб-скрейпинга",
+    "use_case": "создание собственной масштабной системы сбора информации"
+  },
+  {
+    "id": 16,
+    "name": "Playwright",
+    "github_url": "https://github.com/microsoft/playwright",
+    "description": "управление Chromium, Firefox и WebKit для тестирования и автоматизации браузеров",
+    "use_case": "серверный агент может открывать сложные SPA-сайты и проходить авторизацию"
+  },
+  {
+    "id": 17,
+    "name": "Docling",
+    "github_url": "https://github.com/docling-project/docling",
+    "description": "конвертирует PDF и сложные документы в структуру, подходящую для AI-обработки",
+    "use_case": "извлекать текст и таблицы из документов для RAG-поиска"
+  },
+  {
+    "id": 18,
+    "name": "Unstructured",
+    "github_url": "https://github.com/Unstructured-IO/unstructured",
+    "description": "обработка неструктурированных документов и преобразование в элементы для AI-пайплайнов",
+    "use_case": "загрузка документов в базы знаний с сохранением метаданных"
+  },
+  {
+    "id": 19,
+    "name": "SearXNG",
+    "github_url": "https://github.com/searxng/searxng",
+    "description": "приватная метапоисковая система, объединяющая результаты разных поисковиков",
+    "use_case": "собственный поисковый бэкенд без привязки к Google/Bing"
+  },
+  {
+    "id": 20,
+    "name": "Browser Use",
+    "github_url": "https://github.com/browser-use/browser-use",
+    "description": "инструментарий для взаимодействия AI-агентов с веб-браузером",
+    "use_case": "агент самостоятельно выполняет многошаговые действия на сайтах (заказ билетов, заполнение форм)"
+  },
+  {
+    "id": 21,
+    "name": "Model Context Protocol Servers",
+    "github_url": "https://github.com/modelcontextprotocol/servers",
+    "description": "официальный набор эталонных реализаций MCP-серверов от Anthropic",
+    "use_case": "золотой стандарт для предоставления AI доступа к локальным файлам, Git, базам и контексту"
+  },
+  {
+    "id": 22,
+    "name": "GitHub MCP Server",
+    "github_url": "https://github.com/github/github-mcp-server",
+    "description": "официальный MCP-сервер GitHub для работы с репозиториями, issues и PR",
+    "use_case": "автоматизация аудита кода, создание коммитов и код-ревью"
+  },
+  {
+    "id": 23,
+    "name": "Google API Python Client",
+    "github_url": "https://github.com/googleapis/google-api-python-client",
+    "description": "официальная библиотека для API Google",
+    "use_case": "ChatGPT работает с Gmail, Google Calendar, Google Drive и Sheets"
+  },
+  {
+    "id": 24,
+    "name": "Google Workspace CLI",
+    "github_url": "https://github.com/googleworkspace/cli",
+    "description": "единый CLI для Google Drive, Gmail, Calendar, Sheets, Docs",
+    "use_case": "быстрый запуск операций Google из агентов с готовой OAuth-авторизацией"
+  },
+  {
+    "id": 25,
+    "name": "Notion SDK for JavaScript",
+    "github_url": "https://github.com/makenotion/notion-sdk-js",
+    "description": "официальный JS/TS-клиент Notion API",
+    "use_case": "поиск, чтение и ведение баз знаний Notion через Custom Action"
+  },
+  {
+    "id": 26,
+    "name": "aiogram",
+    "github_url": "https://github.com/aiogram/aiogram",
+    "description": "асинхронный Python-фреймворк для Telegram Bot API",
+    "use_case": "создание Telegram-интерфейсов для ChatGPT и автоматизация уведомлений"
+  },
+  {
+    "id": 27,
+    "name": "python-telegram-bot",
+    "github_url": "https://github.com/python-telegram-bot/python-telegram-bot",
+    "description": "проверенная Python-библиотека для Telegram-ботов",
+    "use_case": "отказоустойчивые боты с фоновыми задачами и очередями"
+  },
+  {
+    "id": 28,
+    "name": "DBHub",
+    "github_url": "https://github.com/bytebase/dbhub",
+    "description": "универсальный MCP-сервер для PostgreSQL, MySQL, MariaDB, SQLite, SQL Server и Oracle",
+    "use_case": "контролируемые SQL-запросы к корпоративным базам данных в режиме read-only"
+  },
+  {
+    "id": 29,
+    "name": "Supabase MCP",
+    "github_url": "https://github.com/supabase/mcp",
+    "description": "инструмент для подключения AI-ассистентов к проектам Supabase",
+    "use_case": "работа с векторными базами данных pgvector и таблицами Supabase"
+  },
+  {
+    "id": 30,
+    "name": "Composio",
+    "github_url": "https://github.com/ComposioHQ/composio",
+    "description": "платформа интеграций и управления инструментами, авторизацией и контекстом для AI-агентов",
+    "use_case": "подключение 200+ внешних сервисов (Jira, Salesforce, HubSpot) без написания кода интеграций"
+  },
+  {
+    "id": 31,
+    "name": "LangChain",
+    "github_url": "https://github.com/langchain-ai/langchain",
+    "description": "базовый фреймворк для создания приложений с LLM и внешними инструментами",
+    "use_case": "объединение моделей, RAG и Action-вызовов в единую логическую цепочку"
+  },
+  {
+    "id": 32,
+    "name": "LangGraph",
+    "github_url": "https://github.com/langchain-ai/langgraph",
+    "description": "фреймворк циклических графов с сохранением состояния",
+    "use_case": "создание отказоустойчивых сценариев с ветвлениями и валидацией человеком (Human-in-the-loop)"
+  },
+  {
+    "id": 33,
+    "name": "Microsoft Agent Framework",
+    "github_url": "https://github.com/microsoft/agent-framework",
+    "description": "официальный преемник AutoGen от Microsoft",
+    "use_case": "промышленная оркестрация совместной работы специализированных AI-агентов на Python и"
+  },
+  {
+    "id": 34,
+    "name": "CrewAI",
+    "github_url": "https://github.com/crewAIInc/crewAI",
+    "description": "фреймворк создания команд AI-агентов с ролевой моделью",
+    "use_case": "распределение задач между исследователем, кодером, тестировщиком и факт-чекером"
+  },
+  {
+    "id": 35,
+    "name": "OpenAI Agents SDK (Python)",
+    "github_url": "https://github.com/openai/openai-agents-python",
+    "description": "официальный SDK от OpenAI для создания агентов и многоагентных процессов",
+    "use_case": "прямое использование стандартов OpenAI для оркестрации инструментов"
+  },
+  {
+    "id": 36,
+    "name": "OpenAI Agents SDK (JavaScript)",
+    "github_url": "https://github.com/openai/openai-agents-js",
+    "description": "JS/TS версия официального SDK агентов OpenAI",
+    "use_case": "агенты в Node"
+  },
+  {
+    "id": 37,
+    "name": "Pydantic AI",
+    "github_url": "https://github.com/pydantic/pydantic-ai",
+    "description": "типобезопасный фреймворк для создания AI-приложений",
+    "use_case": "100% строгая валидация входящих и исходящих данных моделей на базе Pydantic"
+  },
+  {
+    "id": 38,
+    "name": "Google Agent Development Kit",
+    "github_url": "https://github.com/google/adk-python",
+    "description": "инструментарий от Google для разработки и тестирования агентов",
+    "use_case": "поддержка мультимодельных архитектур (OpenAI + Gemini)"
+  },
+  {
+    "id": 39,
+    "name": "Hugging Face smolagents",
+    "github_url": "https://github.com/huggingface/smolagents",
+    "description": "легковесная библиотека AI-агентов, исполняющих чистый Python-код",
+    "use_case": "максимальная скорость и прозрачность логики работы инструментов"
+  },
+  {
+    "id": 40,
+    "name": "Agno",
+    "github_url": "https://github.com/agno-agi/agno",
+    "description": "высокопроизводительная инфраструктура для AI-агентов с памятью и хранилищами",
+    "use_case": "построение агентных микросервисов с долгосрочной памятью"
+  },
+  {
+    "id": 41,
+    "name": "n8n",
+    "github_url": "https://github.com/n8n-io/n8n",
+    "description": "лидер визуальной автоматизации бизнес-процессов с AI-нодами",
+    "use_case": "сборка сложных пайплайнов и связка ChatGPT с любыми вебхуками без программирования"
+  },
+  {
+    "id": 42,
+    "name": "Activepieces",
+    "github_url": "https://github.com/activepieces/activepieces",
+    "description": "опенсорсная альтернатива Zapier со встроенным MCP",
+    "use_case": "триггеры событий и выполнение действий в ответ на вызовы AI"
+  },
+  {
+    "id": 43,
+    "name": "Dify",
+    "github_url": "https://github.com/langgenius/dify",
+    "description": "визуальная платформа сборки RAG-систем и агентных приложений",
+    "use_case": "быстрый запуск готовых корпоративных чат-ботов с базой знаний"
+  },
+  {
+    "id": 44,
+    "name": "Flowise",
+    "github_url": "https://github.com/FlowiseAI/Flowise",
+    "description": "интерфейс для сборки LangChain/LangGraph цепочек без кода",
+    "use_case": "визуальное проектирование логики вызова инструментов"
+  },
+  {
+    "id": 45,
+    "name": "Open WebUI",
+    "github_url": "https://github.com/open-webui/open-webui",
+    "description": "автономный веб-интерфейс для Ollama и OpenAI API",
+    "use_case": "собственный защищенный чат-интерфейс с поддержкой функций и плагинов"
+  },
+  {
+    "id": 46,
+    "name": "Ollama",
+    "github_url": "https://github.com/ollama/ollama",
+    "description": "стандарт запуска локальных языковых моделей (Llama 3, Qwen, DeepSeek)",
+    "use_case": "бесплатный локальный бэкенд без передачи данных в облако"
+  },
+  {
+    "id": 47,
+    "name": "llama.cpp",
+    "github_url": "https://github.com/ggml-org/llama.cpp",
+    "description": "движок высокопроизводительного инференса на C/C++ с квантованием",
+    "use_case": "запуск моделей на любых потребительских процессорах и видеокартах"
+  },
+  {
+    "id": 48,
+    "name": "vLLM",
+    "github_url": "https://github.com/vllm-project/vllm",
+    "description": "промышленный сервер инференса с пакетной обработкой (PagedAttention)",
+    "use_case": "обслуживание тысяч запросов в секунду с OpenAI-совместимым API"
+  },
+  {
+    "id": 49,
+    "name": "LiteLLM",
+    "github_url": "https://github.com/BerriAI/litellm",
+    "description": "универсальный AI Gateway прокси для 100+ LLM провайдеров",
+    "use_case": "единая точка входа, балансировка нагрузки, трекинг затрат и фоллбэк"
+  },
+  {
+    "id": 50,
+    "name": "Continue",
+    "github_url": "https://github.com/continuedev/continue",
+    "description": "ведущий открытый AI-ассистент для VS Code и JetBrains",
+    "use_case": "интеграция моделей OpenAI и локальных LLM прямо в рабочий редактор кода"
+  }
+]

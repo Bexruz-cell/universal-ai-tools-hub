@@ -1,23 +1,28 @@
 openapi: 3.1.0
 info:
-  title: ChatGPT SuperActions Hub API
-  description: Production-ready multi-tool API for ChatGPT Custom GPT Actions, autonomous
-    agents, and web integrations.
+  title: OmniTools Universal AI Hub API
+  description: Triple-compatible Tool Hub for Antigravity, Claude, and ChatGPT/Codex.
+    Provides web scraping, YouTube transcripts, crypto & forex data, and 2026 Top-50
+    AI Catalog.
   version: 1.0.0
 servers:
 - url: http://localhost:8000
-  description: Local development server
+  description: Local server (for ngrok/cloudflare tunnel)
 paths:
+  /:
+    get:
+      summary: Root Status
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
   /api/v1/catalog:
     get:
-      tags:
-      - Catalog
-      summary: Get Top-50 Repositories for ChatGPT
-      description: 'Returns curated list of top GitHub repositories for ChatGPT Custom
-        Actions,
-
-        plugins, agents, and automation tools.'
-      operationId: get_catalog_api_v1_catalog_get
+      summary: Search 2026 AI Tools Catalog
+      operationId: api_catalog_api_v1_catalog_get
       parameters:
       - name: query
         in: query
@@ -26,9 +31,9 @@ paths:
           anyOf:
           - type: string
           - type: 'null'
-          description: Search keyword in name or description
+          description: Search keyword in repos
           title: Query
-        description: Search keyword in name or description
+        description: Search keyword in repos
       - name: limit
         in: query
         required: false
@@ -36,20 +41,14 @@ paths:
           type: integer
           maximum: 50
           minimum: 1
-          description: Number of results to return
           default: 50
           title: Limit
-        description: Number of results to return
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RepositoryItem'
-                title: Response Get Catalog Api V1 Catalog Get
+              schema: {}
         '422':
           description: Validation Error
           content:
@@ -58,38 +57,32 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/web/scrape:
     get:
-      tags:
-      - Web Tools
-      summary: Extract clean text from any URL
-      description: 'Scrapes any web page URL, strips away HTML boilerplate, advertisements,
-
-        scripts and styling, and returns clean readable markdown/text for ChatGPT.'
-      operationId: scrape_url_api_v1_web_scrape_get
+      summary: Extract clean text from URL
+      operationId: api_scrape_api_v1_web_scrape_get
       parameters:
       - name: url
         in: query
         required: true
         schema:
           type: string
-          description: Target webpage URL to read and parse
+          description: Target webpage URL
           title: Url
-        description: Target webpage URL to read and parse
+        description: Target webpage URL
       - name: max_length
         in: query
         required: false
         schema:
           type: integer
-          description: Maximum characters of text to return
+          description: Max character length
           default: 8000
           title: Max Length
-        description: Maximum characters of text to return
+        description: Max character length
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ScrapedPageResponse'
+              schema: {}
         '422':
           description: Validation Error
           content:
@@ -98,23 +91,17 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/youtube/transcript:
     get:
-      tags:
-      - YouTube Tools
-      summary: Extract transcript from any YouTube video
-      description: 'Extracts complete text transcript and subtitles from a YouTube
-        video
-
-        for summarization, analysis, or question-answering in ChatGPT.'
-      operationId: get_transcript_api_v1_youtube_transcript_get
+      summary: Extract YouTube Subtitles
+      operationId: api_youtube_api_v1_youtube_transcript_get
       parameters:
       - name: video
         in: query
         required: true
         schema:
           type: string
-          description: YouTube video URL or 11-character video ID
+          description: YouTube URL or Video ID
           title: Video
-        description: YouTube video URL or 11-character video ID
+        description: YouTube URL or Video ID
       - name: languages
         in: query
         required: false
@@ -122,17 +109,16 @@ paths:
           anyOf:
           - type: string
           - type: 'null'
-          description: Comma-separated language priority (e.g. 'ru,en')
+          description: Languages comma-separated
           default: ru,en
           title: Languages
-        description: Comma-separated language priority (e.g. 'ru,en')
+        description: Languages comma-separated
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/YouTubeTranscriptResponse'
+              schema: {}
         '422':
           description: Validation Error
           content:
@@ -141,31 +127,24 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/crypto/price:
     get:
-      tags:
-      - Crypto & Markets
-      summary: Get live cryptocurrency prices and market data
-      description: 'Fetches real-time price, 24h percentage change, and market cap
-        for requested cryptocurrencies.
-
-        No API keys required.'
-      operationId: get_crypto_price_api_v1_crypto_price_get
+      summary: Live Crypto Prices
+      operationId: api_crypto_api_v1_crypto_price_get
       parameters:
       - name: coins
         in: query
         required: false
         schema:
           type: string
-          description: Comma-separated ticker symbols (e.g. btc,eth,sol,ton)
+          description: Tickers comma-separated
           default: btc,eth,sol,ton
           title: Coins
-        description: Comma-separated ticker symbols (e.g. btc,eth,sol,ton)
+        description: Tickers comma-separated
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/CryptoPricesResponse'
+              schema: {}
         '422':
           description: Validation Error
           content:
@@ -174,12 +153,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/finance/convert:
     get:
-      tags:
-      - Finance & Currency
-      summary: Convert between fiat currencies (USD, EUR, RUB, etc.)
-      description: Performs real-time currency conversion using open exchange rate
-        feeds.
-      operationId: convert_currency_api_v1_finance_convert_get
+      summary: Currency Converter
+      operationId: api_convert_api_v1_finance_convert_get
       parameters:
       - name: amount
         in: query
@@ -187,128 +162,36 @@ paths:
         schema:
           type: number
           minimum: 0.01
-          description: Amount to convert
           default: 1.0
           title: Amount
-        description: Amount to convert
       - name: from_curr
         in: query
         required: false
         schema:
           type: string
-          description: Source currency code (USD, EUR, RUB, CNY, KZT)
           default: USD
           title: From Curr
-        description: Source currency code (USD, EUR, RUB, CNY, KZT)
       - name: to_curr
         in: query
         required: false
         schema:
           type: string
-          description: Target currency code (USD, EUR, RUB, CNY, KZT)
           default: RUB
           title: To Curr
-        description: Target currency code (USD, EUR, RUB, CNY, KZT)
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ConvertResponse'
+              schema: {}
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /:
-    get:
-      summary: Root Health Check
-      operationId: root__get
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-  /health:
-    get:
-      summary: Health Status
-      operationId: health_health_get
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
 components:
   schemas:
-    ConvertResponse:
-      properties:
-        amount:
-          type: number
-          title: Amount
-        from_currency:
-          type: string
-          title: From Currency
-        to_currency:
-          type: string
-          title: To Currency
-        converted_amount:
-          type: number
-          title: Converted Amount
-        rate:
-          type: number
-          title: Rate
-      type: object
-      required:
-      - amount
-      - from_currency
-      - to_currency
-      - converted_amount
-      - rate
-      title: ConvertResponse
-    CryptoPriceItem:
-      properties:
-        symbol:
-          type: string
-          title: Symbol
-        name:
-          type: string
-          title: Name
-        price_usd:
-          type: number
-          title: Price Usd
-        change_24h_percent:
-          type: number
-          title: Change 24H Percent
-        market_cap_usd:
-          type: number
-          title: Market Cap Usd
-      type: object
-      required:
-      - symbol
-      - name
-      - price_usd
-      - change_24h_percent
-      - market_cap_usd
-      title: CryptoPriceItem
-    CryptoPricesResponse:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/CryptoPriceItem'
-          type: array
-          title: Data
-        source:
-          type: string
-          title: Source
-      type: object
-      required:
-      - data
-      - source
-      title: CryptoPricesResponse
     HTTPValidationError:
       properties:
         detail:
@@ -318,77 +201,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    RepositoryItem:
-      properties:
-        id:
-          type: integer
-          title: Id
-        name:
-          type: string
-          title: Name
-        repo_slug:
-          type: string
-          title: Repo Slug
-        github_url:
-          type: string
-          title: Github Url
-        description:
-          type: string
-          title: Description
-        chatgpt_use_case:
-          type: string
-          title: Chatgpt Use Case
-      type: object
-      required:
-      - id
-      - name
-      - repo_slug
-      - github_url
-      - description
-      - chatgpt_use_case
-      title: RepositoryItem
-    ScrapedPageResponse:
-      properties:
-        url:
-          type: string
-          title: Url
-        title:
-          type: string
-          title: Title
-        description:
-          type: string
-          title: Description
-        text_content:
-          type: string
-          title: Text Content
-        character_count:
-          type: integer
-          title: Character Count
-      type: object
-      required:
-      - url
-      - title
-      - description
-      - text_content
-      - character_count
-      title: ScrapedPageResponse
-    TranscriptSegment:
-      properties:
-        text:
-          type: string
-          title: Text
-        start:
-          type: number
-          title: Start
-        duration:
-          type: number
-          title: Duration
-      type: object
-      required:
-      - text
-      - start
-      - duration
-      title: TranscriptSegment
     ValidationError:
       properties:
         loc:
@@ -415,26 +227,3 @@ components:
       - msg
       - type
       title: ValidationError
-    YouTubeTranscriptResponse:
-      properties:
-        video_id:
-          type: string
-          title: Video Id
-        total_segments:
-          type: integer
-          title: Total Segments
-        full_text:
-          type: string
-          title: Full Text
-        segments:
-          items:
-            $ref: '#/components/schemas/TranscriptSegment'
-          type: array
-          title: Segments
-      type: object
-      required:
-      - video_id
-      - total_segments
-      - full_text
-      - segments
-      title: YouTubeTranscriptResponse

@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "OmniTools SuperHub",
+  "name_for_model": "omnitools_superhub",
+  "description_for_human": "Universal web scraper, YouTube transcript extractor, live crypto prices, and currency converter.",
+  "description_for_model": "Universal assistant plugin. Use it to read webpages (/api/v1/web/scrape), extract YouTube video transcripts (/api/v1/youtube/transcript), check real-time crypto prices (/api/v1/crypto/price), convert currencies (/api/v1/finance/convert), and search the 2026 AI tool catalog (/api/v1/catalog).",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:8000/openapi.json"
+  },
+  "logo_url": "https://raw.githubusercontent.com/Bexruz-cell/universal-ai-tools-hub/master/assets/logo.png",
+  "contact_email": "bexruz.dev@gmail.com",
+  "legal_info_url": "https://github.com/Bexruz-cell/universal-ai-tools-hub"
+}

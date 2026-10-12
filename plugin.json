@@ -1,0 +1,19 @@
+{
+  "$schema": "https://antigravity.google/schemas/plugin.json",
+  "name": "omnitools-bridge",
+  "version": "1.0.0",
+  "displayName": "OmniTools Universal AI Bridge",
+  "description": "Universal AI tool bridge for Antigravity, Claude, and ChatGPT / Codex. Provides web scraping, YouTube transcripts, crypto & forex data, and 2026 curated catalog.",
+  "author": "Bexruz stark (@Bexruz-cell)",
+  "skills": [
+    "skills/omnitools-bridge"
+  ],
+  "mcpServers": {
+    "omnitools-mcp": {
+      "command": "python",
+      "args": [
+        "src/adapters/mcp_adapter.py"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "omnitools-hub": {
+      "command": "python",
+      "args": [
+        "C:\\Users\\soul\\Documents\\analyzer\\src\\adapters\\mcp_adapter.py"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

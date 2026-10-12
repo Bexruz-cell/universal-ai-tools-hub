@@ -1,83 +1,160 @@
-# ⚡ ChatGPT SuperActions Hub (All-in-One Repository)
+# 🌐 OmniTools Universal AI Bridge
 
-> Единый супер-репозиторий для расширения возможностей ChatGPT: отборный каталог ТОП-50 инструментов и готовый production-бэкенд для подключения Custom Actions в 1 клик.
+<div align="center">
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
+[![MCP Protocol](https://img.shields.io/badge/MCP-Protocol_2024--11--05-blueviolet.svg)](https://modelcontextprotocol.io)
+[![Tests](https://img.shields.io/badge/Tests-7%2F7%20Passed%20(100%25)-success.svg)](https://pytest.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+**Единый универсальный мост инструментов, совместимый с Google Antigravity, Anthropic Claude и OpenAI ChatGPT / Codex.**
+
+[English Documentation](#-english-overview) · [Архитектура](#-архитектура-экосистемы) · [Каталог ТОП-50 2026](catalog/top_50_repositories_2026.md) · [Быстрый старт](#-быстрый-старт)
+
+</div>
 
 ---
 
-## 🌟 Архитектура репозитория (2 Части)
+## 🌟 Ключевая концепция (Triple-Target Compatibility)
 
-Репозиторий разделён на 2 логические части:
+Большинство плагинов пишутся только под одну нейросеть. **OmniTools** решает эту проблему: единое ядро инструментов сразу работает с тремя главными платформами:
 
+```mermaid
+flowchart TD
+    subgraph Clients ["Клиентские AI-системы"]
+        C1["🤖 Google Antigravity"]
+        C2["🧠 Anthropic Claude (Desktop / Code)"]
+        C3["💬 OpenAI ChatGPT / Codex"]
+    end
+
+    subgraph Adapters ["Универсальные Адаптеры"]
+        A1["Antigravity Skill & Plugin (plugin.json / SKILL.md)"]
+        A2["Model Context Protocol / MCP (Stdio JSON-RPC)"]
+        A3["OpenAPI 3.1 & REST API (FastAPI)"]
+    end
+
+    subgraph Core ["Ядро инструментов OmniTools Core"]
+        CoreEngine["🛠️ Core Tools Engine"]
+        T1["🌐 Web Scraper (Чистый текст без мусора)"]
+        T2["📺 YouTube Transcriber (Субтитры ru/en)"]
+        T3["📈 Crypto Live Prices (BTC, ETH, SOL, TON)"]
+        T4["💱 Forex Currency Converter (USD, EUR, RUB)"]
+        T5["📚 Top-50 AI Repositories Catalog (2026)"]
+    end
+
+    C1 --> A1 & A2
+    C2 --> A2
+    C3 --> A3
+
+    A1 & A2 & A3 --> CoreEngine
+    CoreEngine --> T1 & T2 & T3 & T4 & T5
 ```
-analyzer/
-├── 📁 catalog/                  # [Часть 1] Каталог ТОП-50 инструментов
-│   ├── top_50_repositories.md  # Подробный каталог с описанием и кейсами
-│   ├── catalog.json            # Машиночитаемый JSON для интеграций и API
-│   └── generate_json.py        # Скрипт автоматической генерации базы
-│
-├── 📁 server/                   # [Часть 2] Готовый FastAPI бэкенд для ChatGPT
-│   ├── main.py                 # Главный сервер приложения
-│   ├── openapi.yaml            # Готовая спецификация OpenAPI 3.0 (YAML)
-│   ├── openapi.json            # Спецификация OpenAPI 3.0 (JSON)
-│   ├── requirements.txt        # Список зависимостей
-│   ├── export_openapi.py       # Экспортер OpenAPI-схем
-│   └── 📁 routers/             # Модули готовых инструментов
-│       ├── catalog.py          # Доступ к каталогу топ-50 репозиториев
-│       ├── web.py              # Парсинг и очистка веб-страниц по URL
-│       ├── youtube.py          # Извлечение субтитров и транскриптов YouTube
-│       ├── crypto.py           # Живые котировки крипторынка (CoinGecko/Binance)
-│       └── finance.py          # Конвертер фиатных мировых валют
-│
-├── 📁 docs/                     # Инструкции и документация
-│   └── chatgpt_setup_guide.md  # Пошаговый гайд по подключению к ChatGPT
-│
-└── 📁 tests/                    # Набор автотестов (Verification Gate)
-    └── test_server.py          # Тестирование всех эндпоинтов (100% Pass)
-```
 
 ---
 
-## 📚 Часть 1: Каталог ТОП-50 инструментов
+## 🛠 Встроенные возможности
 
-В папке `catalog/` собрана проверенная база из 50 репозиториев по 7 направлениям:
-1. **Custom Actions & OpenAPI:** Шаблоны экшенов, спецификации и конструкторы.
-2. **Web Scraping & Search:** Firecrawl, Jina Reader, DuckDuckGo Search, Crawl4AI.
-3. **Мультимедиа & Документы:** YouTube Transcript API, Marker, PyMuPDF, Whisper.
-4. **Бизнес-интеграции:** Notion, Telegram (Aiogram), SQLAlchemy, Vanna SQL, Google API.
-5. **AI-агенты и MCP:** Model Context Protocol (MCP), CrewAI, LangChain, AutoGen.
-6. **Финансы и Web3:** CCXT, CoinGecko, YFinance, Web3.py.
-7. **Безопасность:** Pydantic, Guardrails AI, Promptfoo, Langfuse.
-
-Полный список доступен в [catalog/top_50_repositories.md](catalog/top_50_repositories.md).
+1. **🌐 Web Scraper (`scrape_web` / `/api/v1/web/scrape`)**:  
+   Превращает любой URL в чистый Markdown/текст для анализа LLM, вычищая рекламу, скрипты, навигацию и стили.
+2. **📺 YouTube Transcriber (`get_youtube_transcript` / `/api/v1/youtube/transcript`)**:  
+   Мгновенное извлечение полных субтитров и транскриптов видео по ссылке или ID (поддержка `ru`, `en` и автосубтитров).
+3. **📈 Crypto Live Tickers (`get_crypto_prices` / `/api/v1/crypto/price`)**:  
+   Реальные цены, капитализация и 24ч динамика для топ-криптовалют без необходимости в API-ключах.
+4. **💱 Валютный конвертер (`convert_currency` / `/api/v1/finance/convert`)**:  
+   Точные курсы мировых фиатных валют (USD, EUR, RUB, CNY, KZT).
+5. **📚 Каталог ТОП-50 репозиториев 2026 (`search_catalog` / `/api/v1/catalog`)**:  
+   Программный поиск по актуальной базе из 50 лучших open-source инструментов для расширения возможностей AI.
 
 ---
 
-## 🚀 Часть 2: Запуск готового сервера для ChatGPT
+## 🚀 Быстрый старт и подключение
 
 ### 1. Установка зависимостей
 ```bash
+git clone https://github.com/Bexruz-cell/universal-ai-tools-hub.git
+cd universal-ai-tools-hub
 pip install -r server/requirements.txt
 ```
 
-### 2. Запуск сервера
-```bash
-uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
+---
+
+### А. Подключение к Google Antigravity
+Проект уже содержит манифест [`plugin.json`](plugin.json) и навык [`skills/omnitools-bridge/SKILL.md`](skills/omnitools-bridge/SKILL.md).
+* Antigravity автоматически обнаруживает навык в директории `skills/` или подключает MCP-сервер из `src/adapters/mcp_adapter.py`.
+
+---
+
+### Б. Подключение к Anthropic Claude (Desktop / Code)
+MCP-сервер работает по стандартному протоколу Model Context Protocol.
+
+1. Откройте файл конфигурации Claude Desktop:  
+   `%APPDATA%\Claude\claude_desktop_config.json` (Windows) или `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS).
+2. Добавьте блок из [`configs/claude_desktop_config.json`](configs/claude_desktop_config.json):
+```json
+{
+  "mcpServers": {
+    "omnitools-hub": {
+      "command": "python",
+      "args": ["C:\\path\\to\\universal-ai-tools-hub\\src\\adapters\\mcp_adapter.py"],
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}
 ```
+3. Перезапустите Claude — в панели появится значок молотка 🔨 со всеми инструментами!
 
-* Swagger UI документация: `http://localhost:8000/docs`
-* Тестирование работоспособности: `http://localhost:8000/health`
+---
 
-### 3. Подключение к Custom GPT
-1. Скопируйте схему из `server/openapi.yaml`.
-2. В интерфейсе ChatGPT Custom GPT нажмите **Create new action** и вставьте схему.
-3. Подробная инструкция: [docs/chatgpt_setup_guide.md](docs/chatgpt_setup_guide.md).
+### В. Подключение к OpenAI ChatGPT / Codex
+1. Запустите API-сервер:
+   ```bash
+   python main.py --mode api
+   ```
+2. Откройте туннель наружу для тестов (`cloudflared tunnel --url http://localhost:8000` или `ngrok http 8000`).
+3. В интерфейсе **ChatGPT (Custom GPT)** -> **Create new action** -> вставьте схему из [`openapi.yaml`](openapi.yaml).
+4. Подробная инструкция: [docs/chatgpt_setup_guide.md](docs/chatgpt_setup_guide.md).
 
 ---
 
 ## 🧪 Тестирование и верификация
 
-Все эндпоинты покрыты тестами:
+Все компоненты (API, MCP и ядро) покрыты сквозными тестами:
 ```bash
-pytest tests/ -v
+python main.py --mode test
 ```
-Статус проверки: **6 passed (100% Green)**.
+**Результат:** `7 passed (100% Green)` ✅
+
+---
+
+## 📂 Структура проекта
+
+```
+universal-ai-tools-hub/
+├── 📁 catalog/                  # Каталог ТОП-50 репозиториев (MD + JSON)
+│   ├── top_50_repositories_2026.md
+│   └── catalog_2026.json
+├── 📁 src/                      # Исходный код ядра и адаптеров
+│   ├── 📁 core/                 # Чистая логика инструментов (tools.py)
+│   └── 📁 adapters/             # Адаптеры платформ
+│       ├── mcp_adapter.py       # MCP-сервер для Claude & Antigravity
+│       └── api_adapter.py       # FastAPI REST/OpenAPI для ChatGPT & Codex
+├── 📁 skills/                   # Нативные навыки Antigravity
+│   └── 📁 omnitools-bridge/     # SKILL.md
+├── 📁 configs/                  # Готовые конфиги для Claude Desktop
+├── 📁 docs/                     # Руководства по установке
+├── 📁 tests/                    # Набор тестов (pytest)
+├── .well-known/ai-plugin.json   # Манифест ChatGPT Plugins
+├── openapi.yaml                 # Готовая спецификация OpenAPI 3.1
+├── plugin.json                  # Манифест Antigravity Plugin
+├── main.py                      # Универсальный CLI-запуск
+└── README.md                    # Главная документация
+```
+
+---
+
+## 📄 Лицензия
+Распространяется под свободной лицензией MIT. Создано для сообщества AI-разработчиков.  
+**Автор:** Bexruz stark ([@Bexruz-cell](https://github.com/Bexruz-cell))
