@@ -1,7 +1,7 @@
 {
   "name": "omnitools-bridge",
-  "version": "1.0.0",
-  "description": "Universal AI tool bridge for OpenAI Codex, Google Antigravity, Anthropic Claude, and ChatGPT Actions. Features 15 autonomous coding & engineering tools (safe patcher, test runner, AST search, symbol analysis, repo map, dependency graph, Git checkpoints, traceback diagnostics, context optimizer, security guards, docs search) plus deep search, web scraping with SSRF guard, YouTube transcripts, math calculator, crypto prices, currency converter, and the 2026 Curated Top-50 Coding Repositories Catalog.",
+  "version": "2.1.0",
+  "description": "Universal AI Coding Hub: 15 real MCP coding tools for repository mapping, code search, symbol analysis, references, dependency analysis, safe patch proposals, tests, verification, context optimization, token estimation, Git checkpoints, diagnostics, documentation lookup, and coding catalog search. Filesystem access is deny-by-default and scoped to process-authorized workspace roots.",
   "author": {
     "name": "Bexruz stark (@Bexruz-cell)",
     "url": "https://github.com/Bexruz-cell"

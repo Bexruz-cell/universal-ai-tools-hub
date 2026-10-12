@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import re
+import stat
 from typing import Optional, Sequence, Union
 
 # Windows reserved DOS device names: CON, PRN, AUX, NUL, COM1-9, LPT1-9, CONIN$, CONOUT$
@@ -93,6 +94,12 @@ class PathGuard:
         if "\0" in raw_str:
             raise PathTraversalError("Null byte injection detected in path.")
 
+        # Reject Windows device and extended namespace paths unless a future
+        # platform-specific policy explicitly opts in. They are not ordinary
+        # workspace paths and can bypass normal drive/share assumptions.
+        if re.match(r"^(?:\\\\[.?]\\|\\\\\\?\\|\\\\\\.\\)", raw_str):
+            raise DisallowedPathError("Windows device and extended namespace paths are not allowed.")
+
         # Check for Windows reserved names in each component
         p_obj = Path(raw_str)
         for part in p_obj.parts:
@@ -141,6 +148,25 @@ class PathGuard:
                 f"Path traversal detected: '{target}' resolves to '{resolved}', "
                 f"which is outside authorized workspace boundaries."
             )
+
+        # A canonical path check alone is not sufficient when a symlink or
+        # Windows reparse point exists in the path. Reject such components by
+        # default; the authorized root itself is canonicalized separately.
+        cursor = resolved
+        while True:
+            try:
+                info = cursor.lstat()
+                reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+                if cursor.is_symlink() or bool(getattr(info, "st_file_attributes", 0) & reparse_flag):
+                    raise PathTraversalError(
+                        f"Symlink or reparse-point path component is not allowed: '{cursor}'."
+                    )
+            except FileNotFoundError:
+                if not allow_nonexistent:
+                    raise
+            if cursor in self.allowed_roots or cursor.parent == cursor:
+                break
+            cursor = cursor.parent
 
         if not allow_nonexistent and not resolved.exists():
             raise FileNotFoundError(f"File or directory does not exist: '{target}'")

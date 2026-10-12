@@ -45,6 +45,69 @@ from src.coding_tools.docs import find_documentation
 from src.coding_tools.catalog import search_coding_catalog
 from src.context_optimizer.compressor import summarize_context
 from src.context_optimizer.budget import estimate_tokens
+from src.security.workspace_policy import WorkspacePolicy
+
+
+def _authorize_path(policy: WorkspacePolicy, value: Any, **kwargs: Any) -> str:
+    """Validate a tool path against process-authorized roots."""
+    return str(policy.validate(value, **kwargs))
+
+
+def _authorize_tool_arguments(name: str, arguments: Dict[str, Any], policy: WorkspacePolicy) -> Dict[str, Any]:
+    """Normalize and authorize every filesystem-bearing MCP argument."""
+    args = dict(arguments)
+    if name == "repo_map":
+        args["root_path"] = _authorize_path(policy, args.get("root_path", "."), must_be_dir=True)
+    elif name == "search_code":
+        args["path"] = _authorize_path(policy, args.get("path", "."))
+    elif name == "read_symbol":
+        args["file_path"] = _authorize_path(policy, args.get("file_path"), must_be_file=True)
+    elif name == "find_references":
+        args["workspace_root"] = _authorize_path(policy, args.get("workspace_root", "."), must_be_dir=True)
+    elif name == "dependency_graph":
+        args["file_path"] = _authorize_path(policy, args.get("file_path", "src/adapters/mcp_adapter.py"), must_be_file=True)
+        if args.get("workspace_root"):
+            args["workspace_root"] = _authorize_path(policy, args["workspace_root"], must_be_dir=True)
+    elif name in {"propose_patch", "apply_patch"}:
+        args["file_path"] = _authorize_path(policy, args.get("file_path"), allow_nonexistent=name == "propose_patch")
+    elif name == "summarize_context":
+        source = args.get("source", ".")
+        # summarize_context accepts both inline source text and a file path.
+        # Only path-shaped inputs are authorized; inline content must remain data.
+        if isinstance(source, (str, Path)) and "\n" not in str(source):
+            candidate = Path(str(source))
+            if candidate.is_absolute() or candidate.exists() or "/" in str(source) or "\\" in str(source):
+                args["source"] = _authorize_path(policy, source, must_be_file=True)
+    elif name == "estimate_tokens":
+        args["file_paths"] = [_authorize_path(policy, path, must_be_file=True) for path in args.get("file_paths", [])]
+    elif name == "diagnose_error":
+        args["related_files"] = [_authorize_path(policy, path, must_be_file=True) for path in args.get("related_files", [])]
+    elif name in {"run_targeted_tests", "verify_changes"}:
+        if args.get("changed_files"):
+            args["changed_files"] = [_authorize_path(policy, path, must_be_file=True) for path in args["changed_files"]]
+        if args.get("modified_files"):
+            args["modified_files"] = [_authorize_path(policy, path, must_be_file=True) for path in args["modified_files"]]
+        targets = args.get("targets") or ([] if not args.get("test_target") else [args["test_target"]])
+        checked_targets = []
+        for target in targets:
+            target_text = str(target).split("::", 1)[0]
+            checked_targets.append(str(policy.validate(target_text, must_be_file=True)) + (str(target)[len(target_text):] if "::" in str(target) else ""))
+        if targets:
+            args["targets"] = checked_targets
+        if args.get("test_target"):
+            target_text = str(args["test_target"]).split("::", 1)[0]
+            args["test_target"] = str(policy.validate(target_text, must_be_file=True)) + str(args["test_target"])[len(target_text):]
+        if args.get("test_targets"):
+            checked = []
+            for target in args["test_targets"]:
+                target_text = str(target).split("::", 1)[0]
+                checked.append(str(policy.validate(target_text, must_be_file=True)) + str(target)[len(target_text):])
+            args["test_targets"] = checked
+    elif name == "git_checkpoint":
+        # The checkpoint implementation derives the repository from process cwd;
+        # authorize that implicit scope before any git subprocess is started.
+        policy.validate(Path.cwd(), must_be_dir=True)
+    return args
 
 # ---------------------------------------------------------------------------
 # Imports: Legacy Tools Engine (Backwards Compatibility)
@@ -367,6 +430,7 @@ TOOLS: List[Dict[str, Any]] = [
 async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
     """Route tool invocations to core implementations and return formatted JSON string."""
     try:
+        arguments = _authorize_tool_arguments(name, arguments, WorkspacePolicy.from_process())
         # 1. repo_map
         if name == "repo_map":
             root_path = arguments.get("root_path", ".")
@@ -436,7 +500,7 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
             target_content = arguments.get("target_content")
             if target_content is not None and new_content is not None and not patch_diff and file_path:
                 try:
-                    existing = Path(file_path).read_text(encoding="utf-8")
+                    existing = WorkspacePolicy.from_process().guard.safe_read_text(file_path)
                     new_content = existing.replace(target_content, new_content)
                 except Exception:
                     pass
@@ -452,7 +516,7 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
             target_content = arguments.get("target_content")
             if file_path and target_content is not None and new_content is not None and not patch_diff:
                 try:
-                    existing = Path(file_path).read_text(encoding="utf-8")
+                    existing = WorkspacePolicy.from_process().guard.safe_read_text(file_path)
                     new_content = existing.replace(target_content, new_content)
                 except Exception:
                     pass
@@ -505,7 +569,7 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
                 pieces = []
                 for fp in file_paths:
                     try:
-                        pieces.append(Path(fp).read_text(encoding="utf-8"))
+                        pieces.append(WorkspacePolicy.from_process().guard.safe_read_text(fp))
                     except Exception:
                         pass
                 content = "\n".join(pieces)
@@ -605,7 +669,23 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
             return json.dumps({"error": f"Unknown tool: {name}"}, ensure_ascii=False)
 
     except Exception as e:
-        return json.dumps({"error": str(e), "tool": name}, ensure_ascii=False)
+        message = str(e)
+        error_code = "WORKSPACE_ACCESS_DENIED" if any(
+            marker in message.lower()
+            for marker in ("workspace", "outside authorized", "path traversal", "symlink", "reparse")
+        ) else "TOOL_EXECUTION_ERROR"
+        return json.dumps(
+            {
+                "ok": False,
+                "error": {
+                    "code": error_code,
+                    "message": message,
+                    "tool": name,
+                    "retryable": False,
+                },
+            },
+            ensure_ascii=False,
+        )
 
 
 # ==============================================================================
@@ -653,7 +733,7 @@ async def run_stdio_server():
                     "capabilities": {"tools": {}},
                     "serverInfo": {
                         "name": "OmniTools-Universal-AI-Bridge",
-                        "version": "2.0.0"
+                        "version": "2.1.0"
                     }
                 }
             }
@@ -681,10 +761,12 @@ async def run_stdio_server():
                     }
                 }
             except Exception as e:
+                error_text = str(e).lower()
+                error_code = "WORKSPACE_ACCESS_DENIED" if "workspace" in error_text or "outside authorized" in error_text or "path traversal" in error_text else "TOOL_EXECUTION_ERROR"
                 resp = {
                     "jsonrpc": "2.0",
                     "id": msg_id,
-                    "error": {"code": -32603, "message": str(e)}
+                    "error": {"code": -32603, "message": str(e), "data": {"error_code": error_code, "retryable": False}}
                 }
         else:
             resp = {
