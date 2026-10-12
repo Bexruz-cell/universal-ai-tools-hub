@@ -1,0 +1,402 @@
+[
+  {
+    "id": 1,
+    "name": "OpenAI Actions Library",
+    "repo_slug": "openai/openai-openapi",
+    "github_url": "https://github.com/openai/openai-openapi",
+    "description": "Официальные спецификации OpenAPI от OpenAI",
+    "chatgpt_use_case": "Эталонные схемы для написания своих Action"
+  },
+  {
+    "id": 2,
+    "name": "Awesome GPT Actions",
+    "repo_slug": "iamgreggarcia/awesome-gpt-actions",
+    "github_url": "https://github.com/iamgreggarcia/awesome-gpt-actions",
+    "description": "Кураторский список готовых OpenAPI схем для GPTs",
+    "chatgpt_use_case": "Подключение готовых действий в 1 клик"
+  },
+  {
+    "id": 3,
+    "name": "FastAPI GPT Action Template",
+    "repo_slug": "tiangolo/fastapi",
+    "github_url": "https://github.com/tiangolo/fastapi",
+    "description": "Высокопроизводительный асинхронный веб-фреймворк",
+    "chatgpt_use_case": "Создание собственного бэкенда для Action с авто-генерацией OpenAPI"
+  },
+  {
+    "id": 4,
+    "name": "Open Actions",
+    "repo_slug": "open-actions/open-actions",
+    "github_url": "https://github.com/open-actions/open-actions",
+    "description": "Открытая библиотека готовых интеграций для GPTs",
+    "chatgpt_use_case": "Быстрое добавление внешних API"
+  },
+  {
+    "id": 5,
+    "name": "Action Builder CLI",
+    "repo_slug": "mintlify/writer",
+    "github_url": "https://github.com/mintlify/writer",
+    "description": "Утилита для генерации и валидации спецификаций",
+    "chatgpt_use_case": "Проверка YAML-файлов перед загрузкой в ChatGPT"
+  },
+  {
+    "id": 6,
+    "name": "Express GPT Starter",
+    "repo_slug": "expressjs/express",
+    "github_url": "https://github.com/expressjs/express",
+    "description": "Node.js шаблон для создания плагинов и экшенов",
+    "chatgpt_use_case": "Разработка лёгких серверов на JavaScript/TypeScript"
+  },
+  {
+    "id": 7,
+    "name": "Hono API for Edge",
+    "repo_slug": "honojs/hono",
+    "github_url": "https://github.com/honojs/hono",
+    "description": "Сверхбыстрый фреймворк для Cloudflare Workers",
+    "chatgpt_use_case": "Бесплатный хостинг экшенов на edge-серверах"
+  },
+  {
+    "id": 8,
+    "name": "Firecrawl",
+    "repo_slug": "mendableai/firecrawl",
+    "github_url": "https://github.com/mendableai/firecrawl",
+    "description": "Превращает любой сайт в чистый Markdown для LLM",
+    "chatgpt_use_case": "Глубокий парсинг сложных веб-сайтов без мусора"
+  },
+  {
+    "id": 9,
+    "name": "Jina Reader",
+    "repo_slug": "jina-ai/reader",
+    "github_url": "https://github.com/jina-ai/reader",
+    "description": "Конвертер веб-страниц в LLM-ready формат",
+    "chatgpt_use_case": "Мгновенное чтение статей и документации по URL"
+  },
+  {
+    "id": 10,
+    "name": "DuckDuckGo Search",
+    "repo_slug": "deedy5/duckduckgo_search",
+    "github_url": "https://github.com/deedy5/duckduckgo_search",
+    "description": "Бесплатный поиск в DuckDuckGo без API-ключей",
+    "chatgpt_use_case": "Добавление реального веб-поиска в Custom GPT"
+  },
+  {
+    "id": 11,
+    "name": "Tavily Python",
+    "repo_slug": "tavily-ai/tavily-python",
+    "github_url": "https://github.com/tavily-ai/tavily-python",
+    "description": "Поисковый движок, созданный специально для AI",
+    "chatgpt_use_case": "Точный поиск фактов и новостей с фильтрацией"
+  },
+  {
+    "id": 12,
+    "name": "Crawl4AI",
+    "repo_slug": "unclecode/crawl4ai",
+    "github_url": "https://github.com/unclecode/crawl4ai",
+    "description": "Опенсорсный асинхронный веб-краулер для LLM",
+    "chatgpt_use_case": "Парсинг динамических страниц на JavaScript"
+  },
+  {
+    "id": 13,
+    "name": "Beautiful Soup 4",
+    "repo_slug": "w3lib/beautifulsoup4",
+    "github_url": "https://github.com/w3lib/beautifulsoup4",
+    "description": "Классический парсер HTML и XML",
+    "chatgpt_use_case": "Точечное извлечение нужных тегов и таблиц"
+  },
+  {
+    "id": 14,
+    "name": "Scrapy",
+    "repo_slug": "scrapy/scrapy",
+    "github_url": "https://github.com/scrapy/scrapy",
+    "description": "Масштабируемый фреймворк для сбора данных",
+    "chatgpt_use_case": "Массовый сбор каталогов товаров для ChatGPT"
+  },
+  {
+    "id": 15,
+    "name": "YouTube Transcript API",
+    "repo_slug": "jdepoix/youtube-transcript-api",
+    "github_url": "https://github.com/jdepoix/youtube-transcript-api",
+    "description": "Извлечение субтитров из YouTube-видео без ключей",
+    "chatgpt_use_case": "Суммаризация и анализ любых YouTube-роликов"
+  },
+  {
+    "id": 16,
+    "name": "yt-dlp",
+    "repo_slug": "yt-dlp/yt-dlp",
+    "github_url": "https://github.com/yt-dlp/yt-dlp",
+    "description": "Мощнейший загрузчик медиаданных и аудио",
+    "chatgpt_use_case": "Анализ подкастов, видео и стримов через Action"
+  },
+  {
+    "id": 17,
+    "name": "Marker",
+    "repo_slug": "VikParuchuri/marker",
+    "github_url": "https://github.com/VikParuchuri/marker",
+    "description": "Конвертация PDF в Markdown с формулами и таблицами",
+    "chatgpt_use_case": "Чтение научных статей, договоров и книг в GPT"
+  },
+  {
+    "id": 18,
+    "name": "PyMuPDF",
+    "repo_slug": "pymupdf/PyMuPDF",
+    "github_url": "https://github.com/pymupdf/PyMuPDF",
+    "description": "Быстрая работа с PDF и извлечение текста",
+    "chatgpt_use_case": "Обработка многостраничных документов в реальном времени"
+  },
+  {
+    "id": 19,
+    "name": "Whisper",
+    "repo_slug": "openai/whisper",
+    "github_url": "https://github.com/openai/whisper",
+    "description": "Государственный стандарт распознавания речи",
+    "chatgpt_use_case": "Локальная транскрибация аудио-сообщений"
+  },
+  {
+    "id": 20,
+    "name": "Python-docx",
+    "repo_slug": "python-openxml/python-docx",
+    "github_url": "https://github.com/python-openxml/python-docx",
+    "description": "Создание и редактирование файлов Word (.docx)",
+    "chatgpt_use_case": "Генерация отчётов, резюме и договоров на лету"
+  },
+  {
+    "id": 21,
+    "name": "Openpyxl",
+    "repo_slug": "openpyxl/openpyxl",
+    "github_url": "https://github.com/openpyxl/openpyxl",
+    "description": "Чтение и запись таблиц Excel (.xlsx)",
+    "chatgpt_use_case": "Автоматизация таблиц и отчетов прямо из чата"
+  },
+  {
+    "id": 22,
+    "name": "Notion SDK Python",
+    "repo_slug": "ramnes/notion-sdk-py",
+    "github_url": "https://github.com/ramnes/notion-sdk-py",
+    "description": "Официальный клиент для Notion API",
+    "chatgpt_use_case": "Ведение заметок, баз знаний и задач в Notion"
+  },
+  {
+    "id": 23,
+    "name": "Aiogram",
+    "repo_slug": "aiogram/aiogram",
+    "github_url": "https://github.com/aiogram/aiogram",
+    "description": "Асинхронный фреймворк для Telegram-ботов",
+    "chatgpt_use_case": "Двусторонняя связь ChatGPT и Telegram"
+  },
+  {
+    "id": 24,
+    "name": "SQLAlchemy",
+    "repo_slug": "sqlalchemy/sqlalchemy",
+    "github_url": "https://github.com/sqlalchemy/sqlalchemy",
+    "description": "ORM для работы с базами данных (Postgres, MySQL, SQLite)",
+    "chatgpt_use_case": "Подключение ChatGPT напрямую к базе данных компании"
+  },
+  {
+    "id": 25,
+    "name": "Vanna.ai",
+    "repo_slug": "vanna-ai/vanna",
+    "github_url": "https://github.com/vanna-ai/vanna",
+    "description": "Генерация SQL по запросу на естественном языке",
+    "chatgpt_use_case": "Построение аналитических отчетов из БД"
+  },
+  {
+    "id": 26,
+    "name": "Google API Client",
+    "repo_slug": "googleapis/google-api-python-client",
+    "github_url": "https://github.com/googleapis/google-api-python-client",
+    "description": "Клиент для сервисов Google (Drive, Docs, Sheets)",
+    "chatgpt_use_case": "Чтение и запись в Google Таблицы из диалога"
+  },
+  {
+    "id": 27,
+    "name": "AmoCRM API Wrapper",
+    "repo_slug": "amocrm/amocrm-api-php",
+    "github_url": "https://github.com/amocrm",
+    "description": "Интеграция с AmoCRM",
+    "chatgpt_use_case": "Создание сделок, контактов и лидов через GPT"
+  },
+  {
+    "id": 28,
+    "name": "Slack SDK",
+    "repo_slug": "slackapi/python-slack-sdk",
+    "github_url": "https://github.com/slackapi/python-slack-sdk",
+    "description": "Интеграция с корпоративным мессенджером Slack",
+    "chatgpt_use_case": "Отправка уведомлений и команд команде"
+  },
+  {
+    "id": 29,
+    "name": "Model Context Protocol",
+    "repo_slug": "modelcontextprotocol/servers",
+    "github_url": "https://github.com/modelcontextprotocol/servers",
+    "description": "Официальные серверы MCP (стандарт взаимодействия ИИ)",
+    "chatgpt_use_case": "Единый протокол подключения инструментов"
+  },
+  {
+    "id": 30,
+    "name": "CrewAI",
+    "repo_slug": "joaomdmoura/crewAI",
+    "github_url": "https://github.com/joaomdmoura/crewAI",
+    "description": "Фреймворк оркестрации ролевых автономных агентов",
+    "chatgpt_use_case": "Делегирование задач команде специализированных ИИ"
+  },
+  {
+    "id": 31,
+    "name": "LangChain",
+    "repo_slug": "langchain-ai/langchain",
+    "github_url": "https://github.com/langchain-ai/langchain",
+    "description": "Базовый конструктор цепочек и инструментов",
+    "chatgpt_use_case": "Подключение цепочек логики к Custom Actions"
+  },
+  {
+    "id": 32,
+    "name": "LlamaIndex",
+    "repo_slug": "run-llama/llama_index",
+    "github_url": "https://github.com/run-llama/llama_index",
+    "description": "RAG-система для подключения любых источников данных",
+    "chatgpt_use_case": "Поиск по корпоративной документации компании"
+  },
+  {
+    "id": 33,
+    "name": "AutoGen",
+    "repo_slug": "microsoft/autogen",
+    "github_url": "https://github.com/microsoft/autogen",
+    "description": "Мультиагентная платформа от Microsoft",
+    "chatgpt_use_case": "Сложные сценарии совместного решения задач"
+  },
+  {
+    "id": 34,
+    "name": "Dify",
+    "repo_slug": "langgenius/dify",
+    "github_url": "https://github.com/langgenius/dify",
+    "description": "Визуальный конструктор LLM-приложений и плагинов",
+    "chatgpt_use_case": "Быстрое создание бэкенда для Action без кода"
+  },
+  {
+    "id": 35,
+    "name": "Flowise",
+    "repo_slug": "FlowiseAI/Flowise",
+    "github_url": "https://github.com/FlowiseAI/Flowise",
+    "description": "Drag-and-drop интерфейс для создания агентов",
+    "chatgpt_use_case": "Визуальное проектирование логики для Actions"
+  },
+  {
+    "id": 36,
+    "name": "CCXT",
+    "repo_slug": "ccxt/ccxt",
+    "github_url": "https://github.com/ccxt/ccxt",
+    "description": "Подключение к 100+ криптобиржам (Binance, Bybit, OKX)",
+    "chatgpt_use_case": "Получение тикеров, стаканов и арбитраж"
+  },
+  {
+    "id": 37,
+    "name": "CoinGecko API",
+    "repo_slug": "man-c/pycoingecko",
+    "github_url": "https://github.com/man-c/pycoingecko",
+    "description": "Котировки, объёмы и рейтинги 10 000+ криптовалют",
+    "chatgpt_use_case": "Рыночная сводка и расчет капитализации"
+  },
+  {
+    "id": 38,
+    "name": "YFinance",
+    "repo_slug": "ranaroussi/yfinance",
+    "github_url": "https://github.com/ranaroussi/yfinance",
+    "description": "Доступ к данным акций, валют и индексов Yahoo Finance",
+    "chatgpt_use_case": "Финансовый анализ акций Apple, Tesla, S&P 500"
+  },
+  {
+    "id": 39,
+    "name": "Web3.py",
+    "repo_slug": "ethereum/web3.py",
+    "github_url": "https://github.com/ethereum/web3.py",
+    "description": "Python-библиотека для работы с блокчейном Ethereum",
+    "chatgpt_use_case": "Проверка смарт-контрактов, балансов и газа"
+  },
+  {
+    "id": 40,
+    "name": "TonPy / TonWeb",
+    "repo_slug": "toncenter/ton-python",
+    "github_url": "https://github.com/toncenter",
+    "description": "Взаимодействие с блокчейном The Open Network (TON)",
+    "chatgpt_use_case": "Отслеживание транзакций и жетонов в сети TON"
+  },
+  {
+    "id": 41,
+    "name": "Solana-py",
+    "repo_slug": "michaelhly/solana-py",
+    "github_url": "https://github.com/michaelhly/solana-py",
+    "description": "Клиент для блокчейна Solana",
+    "chatgpt_use_case": "Анализ транзакций и токенов на DEX Raydium/Pump"
+  },
+  {
+    "id": 42,
+    "name": "DefiLlama API",
+    "repo_slug": "DefiLlama/defillama-server",
+    "github_url": "https://github.com/DefiLlama",
+    "description": "Крупнейший агрегатор метрик DeFi (TVL, доходность)",
+    "chatgpt_use_case": "Анализ безопасности и доходности протоколов"
+  },
+  {
+    "id": 43,
+    "name": "Pydantic",
+    "repo_slug": "pydantic/pydantic",
+    "github_url": "https://github.com/pydantic/pydantic",
+    "description": "Валидация структур данных в Python",
+    "chatgpt_use_case": "Гарантия правильности JSON-ответов сервера"
+  },
+  {
+    "id": 44,
+    "name": "Guardrails AI",
+    "repo_slug": "guardrails-ai/guardrails",
+    "github_url": "https://github.com/guardrails-ai/guardrails",
+    "description": "Защита ответов модели от галлюцинаций и утечек",
+    "chatgpt_use_case": "Защита Action от инъекций промптов (Prompt Injection)"
+  },
+  {
+    "id": 45,
+    "name": "Promptfoo",
+    "repo_slug": "promptfoo/promptfoo",
+    "github_url": "https://github.com/promptfoo/promptfoo",
+    "description": "CLI-инструмент для тестирования промптов и tool-вызовов",
+    "chatgpt_use_case": "Автоматическое тестирование надежности экшенов"
+  },
+  {
+    "id": 46,
+    "name": "Langfuse",
+    "repo_slug": "langfuse/langfuse",
+    "github_url": "https://github.com/langfuse/langfuse",
+    "description": "Опенсорсный трейсинг и аналитика для LLM",
+    "chatgpt_use_case": "Логирование ошибок и задержек вызовов Action"
+  },
+  {
+    "id": 47,
+    "name": "LiteLLM",
+    "repo_slug": "BerriAI/litellm",
+    "github_url": "https://github.com/BerriAI/litellm",
+    "description": "Универсальный прокси для вызовов 100+ языковых моделей",
+    "chatgpt_use_case": "Резервный бэкенд на случай недоступности OpenAI"
+  },
+  {
+    "id": 48,
+    "name": "Instructor",
+    "repo_slug": "jxnl/instructor",
+    "github_url": "https://github.com/jxnl/instructor",
+    "description": "Структурированные ответы через Pydantic",
+    "chatgpt_use_case": "Строгий формат данных при общении модели с API"
+  },
+  {
+    "id": 49,
+    "name": "Uvicorn",
+    "repo_slug": "encode/uvicorn",
+    "github_url": "https://github.com/encode/uvicorn",
+    "description": "Молниеносный ASGI-сервер для Python",
+    "chatgpt_use_case": "Запуск сервиса на production-серверах"
+  },
+  {
+    "id": 50,
+    "name": "Ngrok / Cloudflared",
+    "repo_slug": "cloudflare/cloudflared",
+    "github_url": "https://github.com/cloudflare/cloudflared",
+    "description": "Бесплатный защищенный туннель наружу для локального ПК",
+    "chatgpt_use_case": "Тестирование Action прямо со своего компьютера без белого IP"
+  }
+]
