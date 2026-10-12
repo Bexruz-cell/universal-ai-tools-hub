@@ -16,7 +16,7 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Development & Workflow",
-      "description": "Universal AI tool bridge for Codex, Antigravity, Claude, and ChatGPT. 5 core tools: deep search, web scraping with hardened SSRF protection, YouTube transcripts, math calculator, crypto prices, and the 2026 Top-50 Catalog."
+      "description": "Universal AI tool bridge for Codex, Antigravity, Claude, and ChatGPT. 7 core tools: deep search, web scraping with hardened SSRF protection, YouTube transcripts, math calculator, crypto prices, currency converter, and the 2026 Top-50 Catalog."
     }
   ]
 }

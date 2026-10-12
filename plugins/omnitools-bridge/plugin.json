@@ -1,7 +1,7 @@
 {
   "name": "omnitools-bridge",
   "version": "1.0.0",
-  "description": "Universal AI tool bridge for OpenAI Codex, Google Antigravity, Anthropic Claude, and ChatGPT Actions. 5 core tools: deep search, web scraping with SSRF guard, YouTube transcripts, math calculator, crypto prices, and the 2026 Top-50 Catalog.",
+  "description": "Universal AI tool bridge for OpenAI Codex, Google Antigravity, Anthropic Claude, and ChatGPT Actions. 7 core tools: deep search, web scraping with SSRF guard, YouTube transcripts, math calculator, crypto prices, currency converter, and the 2026 Top-50 Catalog.",
   "author": {
     "name": "Bexruz stark (@Bexruz-cell)",
     "url": "https://github.com/Bexruz-cell"

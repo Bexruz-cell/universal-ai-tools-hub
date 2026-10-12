@@ -6,7 +6,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol_2024--11--05-blueviolet.svg)](https://modelcontextprotocol.io)
 [![Codex Marketplace](https://img.shields.io/badge/OpenAI_Codex-Marketplace_Verified-green.svg)](https://openai.com)
-[![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passed%20(100%25)-success.svg)](https://pytest.org)
+[![Tests](https://img.shields.io/badge/Tests-85%2F85%20Passed%20(100%25)-success.svg)](https://pytest.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Единый универсальный мост инструментов (Quad-Target Compatibility), сертифицированный для OpenAI Codex, Google Antigravity, Anthropic Claude и ChatGPT Actions.**

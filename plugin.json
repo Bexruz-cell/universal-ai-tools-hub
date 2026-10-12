@@ -11,7 +11,9 @@
     "plugins/omnitools-bridge/skills/scrape-web",
     "plugins/omnitools-bridge/skills/youtube-transcript",
     "plugins/omnitools-bridge/skills/calc-expression",
-    "plugins/omnitools-bridge/skills/crypto-price"
+    "plugins/omnitools-bridge/skills/crypto-price",
+    "plugins/omnitools-bridge/skills/convert-currency",
+    "plugins/omnitools-bridge/skills/search-catalog"
   ],
   "mcpServers": {
     "omnitools-mcp": {

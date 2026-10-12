@@ -109,3 +109,21 @@ def test_get_catalog_categories():
     data = response.json()
     assert "categories" in data
     assert len(data["categories"]) > 0
+
+
+def test_post_convert_currency():
+    response = client.post("/tools/convert", json={"amount": 100, "from_curr": "USD", "to_curr": "EUR"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["from"] == "USD"
+    assert data["to"] == "EUR"
+    assert "converted" in data
+
+
+def test_get_convert_currency_legacy():
+    response = client.get("/api/v1/finance/convert?amount=100&from_curr=USD&to_curr=EUR")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["from"] == "USD"
+    assert data["to"] == "EUR"
+    assert "converted" in data

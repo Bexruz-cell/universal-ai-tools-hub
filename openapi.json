@@ -224,6 +224,42 @@
         }
       }
     },
+    "/tools/convert": {
+      "post": {
+        "summary": "Convert Fiat Currencies",
+        "operationId": "api_tool_convert_tools_convert_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvertRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/catalog": {
       "get": {
         "summary": "Get 2026 AI Tools Catalog",
@@ -593,6 +629,31 @@
           "expression"
         ],
         "title": "CalcRequest"
+      },
+      "ConvertRequest": {
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0.01,
+            "title": "Amount",
+            "description": "Amount to convert",
+            "default": 1.0
+          },
+          "from_curr": {
+            "type": "string",
+            "title": "From Curr",
+            "description": "Source currency ISO code",
+            "default": "USD"
+          },
+          "to_curr": {
+            "type": "string",
+            "title": "To Curr",
+            "description": "Target currency ISO code",
+            "default": "RUB"
+          }
+        },
+        "type": "object",
+        "title": "ConvertRequest"
       },
       "CryptoRequest": {
         "properties": {

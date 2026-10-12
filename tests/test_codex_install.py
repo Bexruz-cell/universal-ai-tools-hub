@@ -273,6 +273,17 @@ def test_codex_plugin_install_cache_and_remove_lifecycle():
         )
 
 
+def test_persist_plugin_installation_ready_state():
+    """Ensure plugin is installed and ready in Codex cache after test suite runs."""
+    plugin_spec = "omnitools-bridge@universal-ai-tools-hub"
+    res = run_codex_cmd(["plugin", "add", plugin_spec])
+    assert res.returncode == 0, f"Failed to persist plugin installation: {res.stdout}"
+    assert CODEX_CACHE_DIR.exists(), "Cache dir should exist after re-adding plugin"
+    list_res = run_codex_cmd(["plugin", "list"])
+    assert "omnitools-bridge@universal-ai-tools-hub" in list_res.stdout
+    assert "installed, enabled" in list_res.stdout
+
+
 # ---------------------------------------------------------------------------
 # Standalone CLI entrypoint
 # ---------------------------------------------------------------------------

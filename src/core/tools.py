@@ -639,3 +639,10 @@ async def convert_fiat(amount: float, from_curr: str, to_curr: str) -> Dict[str,
         }
 
     return {"error": f"Unsupported currency conversion: {f} -> {t}"}
+
+
+# Backward compatibility aliases
+convert_currency = convert_fiat
+search_catalog = search_catalog_2026
+get_youtube_transcript = youtube_transcript
+get_crypto_prices = crypto_price

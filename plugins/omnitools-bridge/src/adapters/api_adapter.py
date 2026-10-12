@@ -76,6 +76,12 @@ class SearchRequest(BaseModel):
     depth: Optional[int] = Field(1, description="Depth of research (1-3)")
 
 
+class ConvertRequest(BaseModel):
+    amount: float = Field(1.0, description="Amount to convert", ge=0.01)
+    from_curr: str = Field("USD", description="Source currency ISO code")
+    to_curr: str = Field("RUB", description="Target currency ISO code")
+
+
 # ------------------------------------------------------------------------------
 # Root and Manifest Endpoints
 # ------------------------------------------------------------------------------
@@ -164,6 +170,14 @@ async def api_tool_crypto(req: CryptoRequest):
 @app.post("/tools/search", summary="Deep Web & Catalog Search")
 async def api_tool_search(req: SearchRequest):
     res = await deep_search(query=req.query, num_results=req.limit or 5, depth=req.depth or 1)
+    return res
+
+
+@app.post("/tools/convert", summary="Convert Fiat Currencies")
+async def api_tool_convert(req: ConvertRequest):
+    res = await convert_fiat(amount=req.amount, from_curr=req.from_curr, to_curr=req.to_curr)
+    if "error" in res:
+        raise HTTPException(status_code=400, detail=res["error"])
     return res
 
 

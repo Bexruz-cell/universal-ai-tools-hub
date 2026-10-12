@@ -55,7 +55,7 @@ BLOCKED_NETWORKS = [
 ]
 
 
-class SSRFSecurityError(ValueError):
+class SSRFSecurityError(Exception):
     """Raised when a target URL violates SSRF security boundaries."""
     pass
 
@@ -100,17 +100,23 @@ def validate_url_ssrf(url: str) -> urllib.parse.ParseResult:
     if parsed.username or parsed.password:
         raise SSRFSecurityError("User credentials in URL are prohibited.")
 
-    # 4. Check if host is direct IP literal
+    # 4. Check if host is direct IP literal (including decimal and hex representations)
+    host_ip_str = hostname.strip("[]")
+    ip_obj = None
     try:
-        # Handle bracketed IPv6 literals
-        host_ip_str = hostname.strip("[]")
-        ip_obj = ipaddress.ip_address(host_ip_str)
+        if host_ip_str.isdigit():
+            ip_obj = ipaddress.ip_address(int(host_ip_str))
+        elif host_ip_str.lower().startswith("0x"):
+            ip_obj = ipaddress.ip_address(int(host_ip_str, 16))
+        else:
+            ip_obj = ipaddress.ip_address(host_ip_str)
+    except ValueError:
+        ip_obj = None
+
+    if ip_obj is not None:
         if is_ip_blocked(ip_obj):
             raise SSRFSecurityError(f"Direct IP access to restricted address is blocked: {ip_obj}")
         return parsed
-    except ValueError:
-        # Not an IP literal, proceed to DNS resolution
-        pass
 
     # 5. DNS Resolution Pre-check
     port = parsed.port or (443 if parsed.scheme.lower() == "https" else 80)
@@ -127,12 +133,13 @@ def validate_url_ssrf(url: str) -> urllib.parse.ParseResult:
         ip_str = sockaddr[0]
         try:
             resolved_ip = ipaddress.ip_address(ip_str)
-            if is_ip_blocked(resolved_ip):
-                raise SSRFSecurityError(
-                    f"Host '{hostname}' resolved to blocked IP: {resolved_ip}"
-                )
         except ValueError:
             raise SSRFSecurityError(f"Invalid resolved IP format: {ip_str}")
+
+        if is_ip_blocked(resolved_ip):
+            raise SSRFSecurityError(
+                f"Host '{hostname}' resolved to blocked IP: {resolved_ip}"
+            )
 
     return parsed
 
@@ -632,3 +639,10 @@ async def convert_fiat(amount: float, from_curr: str, to_curr: str) -> Dict[str,
         }
 
     return {"error": f"Unsupported currency conversion: {f} -> {t}"}
+
+
+# Backward compatibility aliases
+convert_currency = convert_fiat
+search_catalog = search_catalog_2026
+get_youtube_transcript = youtube_transcript
+get_crypto_prices = crypto_price
