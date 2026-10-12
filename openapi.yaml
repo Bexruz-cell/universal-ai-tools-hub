@@ -1,13 +1,12 @@
 openapi: 3.1.0
 info:
   title: OmniTools Universal AI Hub API
-  description: Triple-compatible Tool Hub for Antigravity, Claude, and ChatGPT/Codex.
-    Provides web scraping, YouTube transcripts, crypto & forex data, and 2026 Top-50
-    AI Catalog.
+  description: Cross-platform Tool Hub compatible with OpenAI Codex, Google Antigravity,
+    Anthropic Claude, and ChatGPT Actions.
   version: 1.0.0
 servers:
 - url: http://localhost:8000
-  description: Local server (for ngrok/cloudflare tunnel)
+  description: Local development server
 paths:
   /:
     get:
@@ -19,10 +18,176 @@ paths:
           content:
             application/json:
               schema: {}
+  /health:
+    get:
+      summary: Health Check
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /tools/calc:
+    post:
+      summary: Evaluate Math Expression
+      operationId: api_tool_calc_tools_calc_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalcRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tools/scrape:
+    post:
+      summary: Scrape Web Content with SSRF Protection
+      operationId: api_tool_scrape_tools_scrape_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScrapeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tools/youtube:
+    post:
+      summary: Extract YouTube Subtitles
+      operationId: api_tool_youtube_tools_youtube_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YouTubeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tools/crypto:
+    post:
+      summary: Query Crypto Spot Prices
+      operationId: api_tool_crypto_tools_crypto_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CryptoRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /tools/search:
+    post:
+      summary: Deep Web & Catalog Search
+      operationId: api_tool_search_tools_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /catalog:
+    get:
+      summary: Get 2026 AI Tools Catalog
+      operationId: get_catalog_catalog_get
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Search keyword in repos
+          title: Query
+        description: Search keyword in repos
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /catalog/categories:
+    get:
+      summary: Get Catalog Categories
+      operationId: get_catalog_categories_catalog_categories_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
   /api/v1/catalog:
     get:
-      summary: Search 2026 AI Tools Catalog
-      operationId: api_catalog_api_v1_catalog_get
+      summary: Search 2026 AI Tools Catalog (Legacy)
+      operationId: api_catalog_legacy_api_v1_catalog_get
       parameters:
       - name: query
         in: query
@@ -57,8 +222,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/web/scrape:
     get:
-      summary: Extract clean text from URL
-      operationId: api_scrape_api_v1_web_scrape_get
+      summary: Extract clean text from URL (Legacy)
+      operationId: api_scrape_legacy_api_v1_web_scrape_get
       parameters:
       - name: url
         in: query
@@ -91,8 +256,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/youtube/transcript:
     get:
-      summary: Extract YouTube Subtitles
-      operationId: api_youtube_api_v1_youtube_transcript_get
+      summary: Extract YouTube Subtitles (Legacy)
+      operationId: api_youtube_legacy_api_v1_youtube_transcript_get
       parameters:
       - name: video
         in: query
@@ -127,8 +292,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/crypto/price:
     get:
-      summary: Live Crypto Prices
-      operationId: api_crypto_api_v1_crypto_price_get
+      summary: Live Crypto Prices (Legacy)
+      operationId: api_crypto_legacy_api_v1_crypto_price_get
       parameters:
       - name: coins
         in: query
@@ -153,8 +318,8 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/finance/convert:
     get:
-      summary: Currency Converter
-      operationId: api_convert_api_v1_finance_convert_get
+      summary: Currency Converter (Legacy)
+      operationId: api_convert_legacy_api_v1_finance_convert_get
       parameters:
       - name: amount
         in: query
@@ -192,6 +357,44 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    CalcRequest:
+      properties:
+        expression:
+          type: string
+          title: Expression
+          description: Mathematical expression to evaluate (e.g. 'sqrt(144) + 10')
+        precision:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Precision
+          description: Decimal places for rounding
+          default: 4
+      type: object
+      required:
+      - expression
+      title: CalcRequest
+    CryptoRequest:
+      properties:
+        coins:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: string
+          - type: 'null'
+          title: Coins
+          description: Coin symbols or list
+          default: btc,eth,sol,ton
+        vs_currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vs Currency
+          description: Target comparison fiat currency
+          default: usd
+      type: object
+      title: CryptoRequest
     HTTPValidationError:
       properties:
         detail:
@@ -201,6 +404,47 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ScrapeRequest:
+      properties:
+        url:
+          type: string
+          title: Url
+          description: Target webpage URL to read
+        max_length:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Length
+          description: Max characters to return
+          default: 8000
+      type: object
+      required:
+      - url
+      title: ScrapeRequest
+    SearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Search keyword or phrase
+        limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Limit
+          description: Max results to return
+          default: 5
+        depth:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Depth
+          description: Depth of research (1-3)
+          default: 1
+      type: object
+      required:
+      - query
+      title: SearchRequest
     ValidationError:
       properties:
         loc:
@@ -227,3 +471,20 @@ components:
       - msg
       - type
       title: ValidationError
+    YouTubeRequest:
+      properties:
+        video:
+          type: string
+          title: Video
+          description: YouTube video URL or 11-char ID
+        languages:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Languages
+          description: Comma-separated language priority list
+          default: ru,en
+      type: object
+      required:
+      - video
+      title: YouTubeRequest

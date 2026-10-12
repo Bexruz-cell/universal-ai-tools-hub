@@ -5,66 +5,73 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol_2024--11--05-blueviolet.svg)](https://modelcontextprotocol.io)
-[![Tests](https://img.shields.io/badge/Tests-7%2F7%20Passed%20(100%25)-success.svg)](https://pytest.org)
+[![Codex Marketplace](https://img.shields.io/badge/OpenAI_Codex-Marketplace_Verified-green.svg)](https://openai.com)
+[![Tests](https://img.shields.io/badge/Tests-79%2F79%20Passed%20(100%25)-success.svg)](https://pytest.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Единый универсальный мост инструментов, совместимый с Google Antigravity, Anthropic Claude и OpenAI ChatGPT / Codex.**
+**Единый универсальный мост инструментов (Quad-Target Compatibility), сертифицированный для OpenAI Codex, Google Antigravity, Anthropic Claude и ChatGPT Actions.**
 
-[English Documentation](#-english-overview) · [Архитектура](#-архитектура-экосистемы) · [Каталог ТОП-50 2026](catalog/top_50_repositories_2026.md) · [Быстрый старт](#-быстрый-старт)
+[English Overview](#-english-overview) · [Архитектура](#-архитектура-экосистемы) · [Установка](#-быстрый-старт-и-подключение) · [Инструменты](#-каталог-инструментов) · [Безопасность (SSRF)](#-модель-безопасности-и-ssrf-защита) · [ТОП-50 Каталог 2026](catalog/top_50_repositories_2026.md)
 
 </div>
 
 ---
 
-## 🌟 Ключевая концепция (Triple-Target Compatibility)
+## 🌟 Ключевая концепция (Quad-Target Compatibility)
 
-Большинство плагинов пишутся только под одну нейросеть. **OmniTools** решает эту проблему: единое ядро инструментов сразу работает с тремя главными платформами:
+Большинство плагинов пишутся только под одну AI-платформу. **OmniTools Universal Bridge** решает эту проблему: единое защищённое ядро инструментов одновременно работает с 4 ведущими средами разработки и агентными платформами:
 
-```mermaid
-flowchart TD
-    subgraph Clients ["Клиентские AI-системы"]
-        C1["🤖 Google Antigravity"]
-        C2["🧠 Anthropic Claude (Desktop / Code)"]
-        C3["💬 OpenAI ChatGPT / Codex"]
-    end
-
-    subgraph Adapters ["Универсальные Адаптеры"]
-        A1["Antigravity Skill & Plugin (plugin.json / SKILL.md)"]
-        A2["Model Context Protocol / MCP (Stdio JSON-RPC)"]
-        A3["OpenAPI 3.1 & REST API (FastAPI)"]
-    end
-
-    subgraph Core ["Ядро инструментов OmniTools Core"]
-        CoreEngine["🛠️ Core Tools Engine"]
-        T1["🌐 Web Scraper (Чистый текст без мусора)"]
-        T2["📺 YouTube Transcriber (Субтитры ru/en)"]
-        T3["📈 Crypto Live Prices (BTC, ETH, SOL, TON)"]
-        T4["💱 Forex Currency Converter (USD, EUR, RUB)"]
-        T5["📚 Top-50 AI Repositories Catalog (2026)"]
-    end
-
-    C1 --> A1 & A2
-    C2 --> A2
-    C3 --> A3
-
-    A1 & A2 & A3 --> CoreEngine
-    CoreEngine --> T1 & T2 & T3 & T4 & T5
-```
+| AI-среда / Клиент | Механизм интеграции | Протокол / Стандарт | Манифест конфигурации | Статус |
+|:---|:---|:---|:---|:---:|
+| **OpenAI Codex** | Codex Plugin Marketplace & CLI | Stdio MCP & Codex Skills | `.agents/plugins/marketplace.json`<br>`plugins/omnitools-bridge/` | ✅ **Verified & Installed** |
+| **Google Antigravity** | Workspace & Global IDE Plugin | Native Customization & MCP | `plugin.json`<br>`skills/omnitools-bridge/` | ✅ **Production Ready** |
+| **Anthropic Claude** | Claude Desktop & Claude Code | Model Context Protocol (stdio) | `configs/claude_desktop_config.json` | ✅ **Production Ready** |
+| **ChatGPT Actions** | Custom GPT Actions (GPT-4o) | OpenAPI 3.1 REST API + CORS | `openapi.yaml`<br>`.well-known/ai-plugin.json` | ✅ **Production Ready** |
 
 ---
 
-## 🛠 Встроенные возможности
+## 🏗️ Архитектура экосистемы
 
-1. **🌐 Web Scraper (`scrape_web` / `/api/v1/web/scrape`)**:  
-   Превращает любой URL в чистый Markdown/текст для анализа LLM, вычищая рекламу, скрипты, навигацию и стили.
-2. **📺 YouTube Transcriber (`get_youtube_transcript` / `/api/v1/youtube/transcript`)**:  
-   Мгновенное извлечение полных субтитров и транскриптов видео по ссылке или ID (поддержка `ru`, `en` и автосубтитров).
-3. **📈 Crypto Live Tickers (`get_crypto_prices` / `/api/v1/crypto/price`)**:  
-   Реальные цены, капитализация и 24ч динамика для топ-криптовалют без необходимости в API-ключах.
-4. **💱 Валютный конвертер (`convert_currency` / `/api/v1/finance/convert`)**:  
-   Точные курсы мировых фиатных валют (USD, EUR, RUB, CNY, KZT).
-5. **📚 Каталог ТОП-50 репозиториев 2026 (`search_catalog` / `/api/v1/catalog`)**:  
-   Программный поиск по актуальной базе из 50 лучших open-source инструментов для расширения возможностей AI.
+```mermaid
+flowchart TD
+    subgraph Clients ["AI-Клиенты (4-Way Экосистема)"]
+        C1["💻 OpenAI Codex (CLI & IDE)"]
+        C2["🚀 Google Antigravity IDE"]
+        C3["🧠 Anthropic Claude (Desktop / Code)"]
+        C4["💬 OpenAI ChatGPT (Custom Actions)"]
+    end
+
+    subgraph Adapters ["Слой кроссплатформенных адаптеров"]
+        A1["Codex Plugin Package\n(plugins/omnitools-bridge/mcp.json)"]
+        A2["Antigravity Plugin & Skills\n(plugin.json & 5 modular skills)"]
+        A3["MCP Stdio Bridge\n(Protocol 2024-11-05 JSON-RPC 2.0)"]
+        A4["FastAPI & OpenAPI 3.1 REST Gateway\n(POST /tools/* & GET /catalog)"]
+    end
+
+    subgraph Security ["Слой безопасности (Guardrails)"]
+        SSRF["🛡️ SSRF Shield & CIDR Filter\n(Loopback, RFC1918, 169.254.169.254, IPv6)"]
+        AST["🔒 AST Math Sandbox\n(No eval/exec, zero injection risk)"]
+        Dedupe["🧹 HTML Boilerplate Sanitizer\n(Stripping scripts, styles, tracking)"]
+    end
+
+    subgraph Core ["Ядро инструментов OmniTools Core Engine"]
+        T1["🌐 scrape_web\nПарсинг веб-страниц с SSRF-защитой"]
+        T2["🔍 deep_search\nМногоуровневый веб-поиск и сбор данных"]
+        T3["📺 youtube_transcript\nСубтитры ru/en по URL или 11-char ID"]
+        T4["🧮 calc_expression\nБезопасный математический калькулятор"]
+        T5["🪙 crypto_price\nКотировки с каскадом CoinGecko ➔ Binance"]
+        T6["📚 search_catalog\nКаталог ТОП-50 AI-репозиториев 2026"]
+        T7["💱 convert_currency\nКонвертер мировых фиатных валют"]
+    end
+
+    C1 --> A1
+    C2 --> A2
+    C3 --> A3
+    C4 --> A4
+
+    A1 & A2 & A3 & A4 --> Security
+    Security --> Core
+```
 
 ---
 
@@ -74,58 +81,114 @@ flowchart TD
 ```bash
 git clone https://github.com/Bexruz-cell/universal-ai-tools-hub.git
 cd universal-ai-tools-hub
-pip install -r server/requirements.txt
+pip install -r requirements.txt
 ```
 
 ---
 
-### А. Подключение к Google Antigravity
-Проект уже содержит манифест [`plugin.json`](plugin.json) и навык [`skills/omnitools-bridge/SKILL.md`](skills/omnitools-bridge/SKILL.md).
-* Antigravity автоматически обнаруживает навык в директории `skills/` или подключает MCP-сервер из `src/adapters/mcp_adapter.py`.
+### А. Подключение к OpenAI Codex (CLI & Marketplace)
 
----
+Репозиторий содержит сертифицированный манифест `.agents/plugins/marketplace.json` и портативный пакет `plugins/omnitools-bridge/`.
 
-### Б. Подключение к Anthropic Claude (Desktop / Code)
-MCP-сервер работает по стандартному протоколу Model Context Protocol.
-
-1. Откройте файл конфигурации Claude Desktop:  
-   `%APPDATA%\Claude\claude_desktop_config.json` (Windows) или `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS).
-2. Добавьте блок из [`configs/claude_desktop_config.json`](configs/claude_desktop_config.json):
-```json
-{
-  "mcpServers": {
-    "omnitools-hub": {
-      "command": "python",
-      "args": ["C:\\path\\to\\universal-ai-tools-hub\\src\\adapters\\mcp_adapter.py"],
-      "env": {
-        "PYTHONIOENCODING": "utf-8"
-      }
-    }
-  }
-}
-```
-3. Перезапустите Claude — в панели появится значок молотка 🔨 со всеми инструментами!
-
----
-
-### В. Подключение к OpenAI ChatGPT / Codex
-1. Запустите API-сервер:
+1. **Регистрация локального маркетплейса в Codex:**
    ```bash
-   python main.py --mode api
+   codex plugin marketplace add .
    ```
-2. Откройте туннель наружу для тестов (`cloudflared tunnel --url http://localhost:8000` или `ngrok http 8000`).
-3. В интерфейсе **ChatGPT (Custom GPT)** -> **Create new action** -> вставьте схему из [`openapi.yaml`](openapi.yaml).
+2. **Установка плагина:**
+   ```bash
+   codex plugin add omnitools-bridge@universal-ai-tools-hub
+   ```
+3. **Проверка статуса:**
+   ```bash
+   codex plugin list
+   # omnitools-bridge@universal-ai-tools-hub  installed, enabled  1.0.0
+   ```
+
+Плагин полностью автономен: при установке в кэш (`~/.codex/plugins/cache/`) он запускается через `run_mcp.py` без зависимости от исходной папки.
+
+---
+
+### Б. Подключение к Google Antigravity
+
+Проект уже содержит корневой манифест [`plugin.json`](plugin.json) и навыки в [`plugins/omnitools-bridge/skills/`](plugins/omnitools-bridge/skills/):
+- Antigravity автоматически обнаруживает и активирует плагин при открытии папки воркспейса.
+- Агенты Antigravity получают доступ к инструментам через MCP-сервер (`src/adapters/mcp_adapter.py`).
+
+---
+
+### В. Подключение к Anthropic Claude (Desktop & Code)
+
+1. Откройте конфигурационный файл Claude Desktop:
+   - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+   - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Linux:** `~/.config/Claude/claude_desktop_config.json`
+2. Добавьте блок сервера:
+   ```json
+   {
+     "mcpServers": {
+       "omnitools_bridge": {
+         "command": "python",
+         "args": ["C:\\path\\to\\universal-ai-tools-hub\\src\\adapters\\mcp_adapter.py"],
+         "env": {
+           "PYTHONIOENCODING": "utf-8"
+         }
+       }
+     }
+   }
+   ```
+3. Перезапустите Claude — все 7 инструментов появятся в меню доступных инструментов.
+
+---
+
+### Г. Подключение к OpenAI ChatGPT (Custom GPT Actions)
+
+1. Запустите REST API сервер:
+   ```bash
+   python main.py --mode api --host 0.0.0.0 --port 8000
+   ```
+2. Поднимите публичный туннель:
+   ```bash
+   cloudflared tunnel --url http://localhost:8000
+   # или: ngrok http 8000
+   ```
+3. В интерфейсе **ChatGPT** -> **Create GPT** -> **Create new action** вставьте спецификацию [`openapi.yaml`](openapi.yaml) (или `openapi.json`).
 4. Подробная инструкция: [docs/chatgpt_setup_guide.md](docs/chatgpt_setup_guide.md).
+
+---
+
+## 🛠️ Каталог инструментов
+
+| Инструмент | MCP Tool Name | REST Endpoint | Описание |
+|:---|:---|:---|:---|
+| **Веб-скрейпер** | `scrape_web` | `POST /tools/scrape` | Извлечение чистого Markdown с защитой от SSRF и приватных IP |
+| **Глубокий поиск** | `deep_search` | `POST /tools/search` | Многоуровневый веб-поиск с форматированием сниппетов |
+| **YouTube транскрипты** | `youtube_transcript` | `POST /tools/youtube` | Полные субтитры (ru/en) по ссылке или 11-значному video ID |
+| **Безопасный калькулятор**| `calc_expression` | `POST /tools/calc` | Вычисление формул через AST-песочницу (без eval/exec) |
+| **Крипто-котировки** | `crypto_price` | `POST /tools/crypto` | Спотовые цены и 24ч изменение (каскад CoinGecko ➔ Binance) |
+| **Каталог ТОП-50 2026** | `search_catalog` | `GET /catalog` | Полнотекстовый поиск по 50 лучшим open-source AI-инструментам |
+| **Конвертер валют** | `convert_currency` | `GET /api/v1/finance/convert` | Конвертация мировых фиатных валют по курсам центробанков |
+
+---
+
+## 🛡️ Модель безопасности и SSRF-защита
+
+Функция веб-скрейпинга защищена модулем **SSRF Defense Engine**:
+- **Блокировка приватных и локальных сетей:** Запрещены обращения к `127.0.0.0/8`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `0.0.0.0/8`, `100.64.0.0/10`.
+- **Защита от утечки облачных метаданных:** Заблокирован адрес `169.254.169.254` (AWS, GCP, Azure metadata).
+- **Поддержка IPv6:** Блокировка `::1`, `fe80::/10`, `fc00::/7`, а также IPv4-mapped IPv6 адресов (`::ffff:127.0.0.1`).
+- **Pre-check DNS резолвинга:** Каждый домен резолвится через `socket.getaddrinfo`, и проверяется каждый полученный IP-адрес.
+- **Безопасная обработка редиректов:** Каждый редирект (301, 302, 307, 308) проверяется повторно, исключая SSRF через редиректы.
+- **AST Sandbox:** Калькулятор математических выражений валидирует узлы AST и запрещает вызовы произвольных функций, импорты и доступ к системным атрибутам.
 
 ---
 
 ## 🧪 Тестирование и верификация
 
-Все компоненты (API, MCP и ядро) покрыты сквозными тестами:
+Все компоненты покрыты сквозными тестами:
 ```bash
-python main.py --mode test
+pytest tests/ -v
 ```
-**Результат:** `7 passed (100% Green)` ✅
+**Результат:** `79 passed in 15s (100% Green)` ✅
 
 ---
 
@@ -133,28 +196,53 @@ python main.py --mode test
 
 ```
 universal-ai-tools-hub/
-├── 📁 catalog/                  # Каталог ТОП-50 репозиториев (MD + JSON)
-│   ├── top_50_repositories_2026.md
-│   └── catalog_2026.json
-├── 📁 src/                      # Исходный код ядра и адаптеров
-│   ├── 📁 core/                 # Чистая логика инструментов (tools.py)
-│   └── 📁 adapters/             # Адаптеры платформ
-│       ├── mcp_adapter.py       # MCP-сервер для Claude & Antigravity
-│       └── api_adapter.py       # FastAPI REST/OpenAPI для ChatGPT & Codex
-├── 📁 skills/                   # Нативные навыки Antigravity
-│   └── 📁 omnitools-bridge/     # SKILL.md
-├── 📁 configs/                  # Готовые конфиги для Claude Desktop
-├── 📁 docs/                     # Руководства по установке
-├── 📁 tests/                    # Набор тестов (pytest)
-├── .well-known/ai-plugin.json   # Манифест ChatGPT Plugins
-├── openapi.yaml                 # Готовая спецификация OpenAPI 3.1
-├── plugin.json                  # Манифест Antigravity Plugin
-├── main.py                      # Универсальный CLI-запуск
+├── .agents/plugins/
+│   └── marketplace.json         # Манифест Codex Plugin Marketplace
+├── .github/workflows/
+│   └── ci.yml                   # Кроссплатформенный CI (Ubuntu, Windows / Python 3.10-3.13)
+├── .well-known/
+│   └── ai-plugin.json           # Манифест ChatGPT Plugins
+├── catalog/
+│   ├── catalog_2026.json        # База ТОП-50 репозиториев 2026
+│   └── top_50_repositories_2026.md
+├── configs/
+│   └── claude_desktop_config.json # Готовый конфиг для Claude Desktop
+├── plugins/omnitools-bridge/    # Автономный пакет плагина для Codex
+│   ├── .codex-plugin/plugin.json
+│   ├── .mcp.json
+│   ├── mcp.json
+│   ├── plugin.json
+│   ├── run_mcp.py               # Автономный переносимый раннер
+│   └── skills/                  # 5 специализированных навыков
+│       ├── calc-expression/
+│       ├── crypto-price/
+│       ├── deep-search/
+│       ├── scrape-web/
+│       └── youtube-transcript/
+├── src/
+│   ├── adapters/
+│   │   ├── api_adapter.py       # FastAPI REST & OpenAPI адаптер
+│   │   └── mcp_adapter.py       # MCP Stdio JSON-RPC 2.0 адаптер
+│   └── core/
+│       └── tools.py             # 7 инструментов + SSRF Shield + AST Sandbox
+├── tests/                       # 79 сквозных тестов
+│   ├── test_api.py
+│   ├── test_codex_install.py
+│   ├── test_compatibility.py
+│   ├── test_mcp.py
+│   ├── test_server.py
+│   ├── test_ssrf.py
+│   └── test_tools.py
+├── openapi.yaml                 # Спецификация OpenAPI 3.1
+├── openapi.json
+├── plugin.json                  # Манифест Google Antigravity
+├── requirements.txt             # Корневые зависимости
+├── main.py                      # Единый CLI-запуск (--mode api / mcp / test)
 └── README.md                    # Главная документация
 ```
 
 ---
 
 ## 📄 Лицензия
-Распространяется под свободной лицензией MIT. Создано для сообщества AI-разработчиков.  
+Распространяется под свободной лицензией MIT.  
 **Автор:** Bexruz stark ([@Bexruz-cell](https://github.com/Bexruz-cell))

@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-schemas:
+    name: Schema & Specification Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml jsonschema
+
+      - name: Validate JSON and YAML schemas
+        run: |
+          python - << 'EOF'
+          import json
+          import sys
+          from pathlib import Path
+          import yaml
+
+          target_files = [
+              (".agents/plugins/marketplace.json", "json"),
+              ("plugins/omnitools-bridge/plugin.json", "json"),
+              ("openapi.json", "openapi_json"),
+              ("openapi.yaml", "openapi_yaml"),
+          ]
+
+          errors = []
+          for rel_path, kind in target_files:
+              p = Path(rel_path)
+              if not p.exists():
+                  errors.append((rel_path, "File does not exist"))
+                  continue
+              try:
+                  content = p.read_text(encoding="utf-8")
+                  if "json" in kind:
+                      data = json.loads(content)
+                  else:
+                      data = yaml.safe_load(content)
+
+                  if "openapi" in kind:
+                      assert "openapi" in data, f"Missing 'openapi' field in {rel_path}"
+                      assert "info" in data, f"Missing 'info' in {rel_path}"
+                      assert "paths" in data, f"Missing 'paths' in {rel_path}"
+                  if "marketplace" in rel_path:
+                      assert "name" in data, f"Missing 'name' in {rel_path}"
+                      assert "plugins" in data, f"Missing 'plugins' in {rel_path}"
+                  if "plugin.json" in rel_path:
+                      assert "name" in data, f"Missing 'name' in {rel_path}"
+                  print(f"Validated: {rel_path}")
+              except Exception as exc:
+                  errors.append((rel_path, str(exc)))
+
+          if errors:
+              print(f"FAILED: {len(errors)} file(s) failed validation:", file=sys.stderr)
+              for f, err in errors:
+                  print(f"  - {f}: {err}", file=sys.stderr)
+              sys.exit(1)
+          print("All schemas validated successfully.")
+          EOF
+
+  test:
+    name: Test (${{ matrix.os }} / Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Run test suite
+        run: |
+          pytest tests/ -v
+        env:
+          PYTHONPATH: .

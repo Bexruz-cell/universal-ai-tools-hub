@@ -1,20 +1,101 @@
-import sys
-import json
-import asyncio
-from pathlib import Path
+"""OmniTools Universal AI Bridge - Model Context Protocol (MCP) Stdio Server
 
-# Add project root
-sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+Fully compliant with MCP Specification (2024-11-05).
+Cross-platform stdio JSON-RPC 2.0 communication supporting Windows, Linux, and macOS.
+"""
+
+import asyncio
+import json
+import os
+import sys
+from pathlib import Path
+from typing import Any, Dict
+
+# Ensure UTF-8 streams across all operating systems
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdin, "reconfigure"):
+    sys.stdin.reconfigure(encoding="utf-8")
+
+# Dynamically add project root and src directory
+current_dir = Path(__file__).resolve().parent
+project_root = current_dir.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+if str(current_dir.parent) not in sys.path:
+    sys.path.insert(0, str(current_dir.parent))
 
 from src.core.tools import (
+    deep_search,
+    scrape_web,
+    youtube_transcript,
+    calc_expression,
+    crypto_price,
     search_catalog_2026,
-    scrape_web_page,
-    get_youtube_transcript,
-    get_crypto_prices,
-    convert_fiat
+    convert_fiat,
 )
 
 TOOLS = [
+    {
+        "name": "deep_search",
+        "description": "Execute comprehensive multi-depth web search and recursive exploration.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query or topic"},
+                "num_results": {"type": "integer", "description": "Max results to return", "default": 5},
+                "depth": {"type": "integer", "description": "Research depth (1-3)", "default": 1}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "scrape_web",
+        "description": "Fetch, sanitize, and extract clean readable markdown/text from a webpage with hardened SSRF protection.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string", "description": "Target webpage URL to read"},
+                "max_length": {"type": "integer", "description": "Maximum characters to extract", "default": 8000}
+            },
+            "required": ["url"]
+        }
+    },
+    {
+        "name": "youtube_transcript",
+        "description": "Extract full subtitles/transcript text from any YouTube video URL or ID.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "video": {"type": "string", "description": "YouTube URL or 11-char Video ID"},
+                "languages": {"type": "string", "description": "Priority languages comma-separated (e.g. 'ru,en')", "default": "ru,en"}
+            },
+            "required": ["video"]
+        }
+    },
+    {
+        "name": "calc_expression",
+        "description": "Safely evaluate mathematical expressions using an AST sandbox (no eval/exec risk).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "expression": {"type": "string", "description": "Mathematical formula to evaluate (e.g. 'sqrt(144) + 12 * 5')"},
+                "precision": {"type": "integer", "description": "Decimal places to round", "default": 4}
+            },
+            "required": ["expression"]
+        }
+    },
+    {
+        "name": "crypto_price",
+        "description": "Get real-time spot prices and 24h change for crypto assets (BTC, ETH, SOL, TON, etc.) with dual-engine fallback.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "coins": {"type": "string", "description": "Comma-separated crypto tickers (e.g. 'btc,eth,sol,ton')", "default": "btc,eth,sol,ton"},
+                "vs_currency": {"type": "string", "description": "Target fiat currency", "default": "usd"}
+            }
+        }
+    },
     {
         "name": "search_catalog",
         "description": "Search the 2026 Top-50 GitHub AI repositories catalog (Custom Actions, MCP, scraping, agents, automation).",
@@ -27,42 +108,8 @@ TOOLS = [
         }
     },
     {
-        "name": "scrape_web",
-        "description": "Fetch and extract clean readable text from any website URL for analysis.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "url": {"type": "string", "description": "Target webpage URL to read"},
-                "max_length": {"type": "integer", "description": "Maximum characters to extract", "default": 8000}
-            },
-            "required": ["url"]
-        }
-    },
-    {
-        "name": "get_youtube_transcript",
-        "description": "Extract full subtitles/transcript text from any YouTube video URL or ID.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "video": {"type": "string", "description": "YouTube video URL or 11-char video ID"},
-                "languages": {"type": "string", "description": "Languages comma-separated, e.g. ru,en", "default": "ru,en"}
-            },
-            "required": ["video"]
-        }
-    },
-    {
-        "name": "get_crypto_prices",
-        "description": "Get real-time cryptocurrency prices, 24h change, and market tickers without API keys.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "coins": {"type": "string", "description": "Tickers comma-separated (btc,eth,sol,ton,trx)", "default": "btc,eth,sol,ton"}
-            }
-        }
-    },
-    {
         "name": "convert_currency",
-        "description": "Real-time fiat currency converter (USD, EUR, RUB, CNY, KZT).",
+        "description": "Convert between fiat currencies (USD, EUR, RUB, CNY, KZT) using live or cached exchange rates.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -75,44 +122,84 @@ TOOLS = [
     }
 ]
 
-async def handle_call_tool(name: str, arguments: dict):
-    if name == "search_catalog":
-        res = search_catalog_2026(query=arguments.get("query"), limit=arguments.get("limit", 20))
+
+async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
+    """Route tool invocations to core implementations and return formatted JSON string."""
+    if name == "deep_search":
+        res = await deep_search(
+            query=arguments.get("query", ""),
+            num_results=arguments.get("num_results", 5),
+            depth=arguments.get("depth", 1)
+        )
         return json.dumps(res, ensure_ascii=False, indent=2)
-    elif name == "scrape_web":
-        res = await scrape_web_page(url=arguments["url"], max_length=arguments.get("max_length", 8000))
+    elif name in ("scrape_web", "scrape_web_page"):
+        res = await scrape_web(
+            url=arguments.get("url", ""),
+            max_length=arguments.get("max_length", 8000)
+        )
         return json.dumps(res, ensure_ascii=False, indent=2)
-    elif name == "get_youtube_transcript":
-        res = get_youtube_transcript(video=arguments["video"], languages=arguments.get("languages", "ru,en"))
+    elif name in ("youtube_transcript", "get_youtube_transcript"):
+        res = youtube_transcript(
+            video=arguments.get("video", ""),
+            languages=arguments.get("languages", "ru,en")
+        )
         return json.dumps(res, ensure_ascii=False, indent=2)
-    elif name == "get_crypto_prices":
-        res = await get_crypto_prices(coins=arguments.get("coins", "btc,eth,sol,ton"))
+    elif name == "calc_expression":
+        res = calc_expression(
+            expression=arguments.get("expression", ""),
+            precision=arguments.get("precision", 4)
+        )
         return json.dumps(res, ensure_ascii=False, indent=2)
-    elif name == "convert_currency":
-        res = await convert_fiat(amount=float(arguments["amount"]), from_curr=arguments["from_curr"], to_curr=arguments["to_curr"])
+    elif name in ("crypto_price", "get_crypto_prices"):
+        res = await crypto_price(
+            coins=arguments.get("coins", "btc,eth,sol,ton"),
+            vs_currency=arguments.get("vs_currency", "usd")
+        )
+        return json.dumps(res, ensure_ascii=False, indent=2)
+    elif name == "search_catalog":
+        res = search_catalog_2026(
+            query=arguments.get("query"),
+            limit=arguments.get("limit", 20)
+        )
+        return json.dumps(res, ensure_ascii=False, indent=2)
+    elif name in ("convert_currency", "convert_fiat"):
+        res = await convert_fiat(
+            amount=float(arguments.get("amount", 1.0)),
+            from_curr=arguments.get("from_curr", "USD"),
+            to_curr=arguments.get("to_curr", "RUB")
+        )
         return json.dumps(res, ensure_ascii=False, indent=2)
     else:
-        return f"Unknown tool: {name}"
+        return json.dumps({"error": f"Unknown tool: {name}"}, ensure_ascii=False)
+
 
 async def run_stdio_server():
-    """Standard Model Context Protocol (MCP) JSON-RPC 2.0 stdio server."""
-    loop = asyncio.get_event_loop()
-    reader = asyncio.StreamReader()
-    protocol = asyncio.StreamReaderProtocol(reader)
-    await loop.connect_read_pipe(lambda: protocol, sys.stdin)
-    w_transport, w_protocol = await loop.connect_write_pipe(asyncio.streams.FlowControlMixin, sys.stdout)
-    writer = asyncio.StreamWriter(w_transport, w_protocol, reader, loop)
+    """Cross-platform Model Context Protocol (MCP) JSON-RPC 2.0 stdio server.
+
+    Uses threaded readline to guarantee non-blocking execution across Windows, Linux, and macOS
+    without IOCP handle errors or pipe buffering deadlocks.
+    """
+    loop = asyncio.get_running_loop()
 
     while True:
-        line = await reader.readline()
+        line = await loop.run_in_executor(None, sys.stdin.readline)
         if not line:
             break
-        text = line.decode("utf-8").strip()
+
+        text = line.strip()
         if not text:
             continue
+
         try:
             req = json.loads(text)
-        except Exception:
+        except Exception as e:
+            err_resp = {
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32700, "message": f"Parse error: {str(e)}"}
+            }
+            sys.stdout.write(json.dumps(err_resp, ensure_ascii=False) + "\n")
+            sys.stdout.flush()
             continue
 
         method = req.get("method")
@@ -126,7 +213,7 @@ async def run_stdio_server():
                     "protocolVersion": "2024-11-05",
                     "capabilities": {"tools": {}},
                     "serverInfo": {
-                        "name": "OmniTools-Universal-AI-Hub",
+                        "name": "OmniTools-Universal-AI-Bridge",
                         "version": "1.0.0"
                     }
                 }
@@ -167,9 +254,14 @@ async def run_stdio_server():
                 "error": {"code": -32601, "message": f"Method {method} not found"}
             }
 
-        out_line = json.dumps(resp, ensure_ascii=False) + "\n"
-        sys.stdout.write(out_line)
+        sys.stdout.write(json.dumps(resp, ensure_ascii=False) + "\n")
         sys.stdout.flush()
 
-if __name__ == "__main__":
+
+def main():
+    """CLI entrypoint for MCP stdio server."""
     asyncio.run(run_stdio_server())
+
+
+if __name__ == "__main__":
+    main()

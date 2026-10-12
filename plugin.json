@@ -6,7 +6,12 @@
   "description": "Universal AI tool bridge for Antigravity, Claude, and ChatGPT / Codex. Provides web scraping, YouTube transcripts, crypto & forex data, and 2026 curated catalog.",
   "author": "Bexruz stark (@Bexruz-cell)",
   "skills": [
-    "skills/omnitools-bridge"
+    "skills/omnitools-bridge",
+    "plugins/omnitools-bridge/skills/deep-search",
+    "plugins/omnitools-bridge/skills/scrape-web",
+    "plugins/omnitools-bridge/skills/youtube-transcript",
+    "plugins/omnitools-bridge/skills/calc-expression",
+    "plugins/omnitools-bridge/skills/crypto-price"
   ],
   "mcpServers": {
     "omnitools-mcp": {

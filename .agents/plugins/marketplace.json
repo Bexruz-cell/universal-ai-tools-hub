@@ -1,0 +1,22 @@
+{
+  "name": "universal-ai-tools-hub",
+  "interface": {
+    "displayName": "Universal AI Tools Hub"
+  },
+  "plugins": [
+    {
+      "name": "omnitools-bridge",
+      "displayName": "OmniTools Universal AI Bridge",
+      "source": {
+        "source": "local",
+        "path": "./plugins/omnitools-bridge"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Universal AI tool bridge for Codex, Antigravity, Claude, and ChatGPT. 5 core tools: deep search, web scraping with hardened SSRF protection, YouTube transcripts, math calculator, crypto prices, and the 2026 Top-50 Catalog."
+    }
+  ]
+}
