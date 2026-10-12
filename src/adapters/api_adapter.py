@@ -193,6 +193,16 @@ def get_catalog(
     return search_catalog_2026(query=query, limit=limit)
 
 
+@app.get("/catalog/coding", summary="Search Curated 2026 Top-50 Coding Repositories")
+def get_coding_catalog(
+    query: Optional[str] = Query(None, description="Search keyword in repos"),
+    category: Optional[str] = Query(None, description="Category filter (A, B, C, D, E or category name)"),
+    limit: int = Query(50, ge=1, le=50)
+):
+    from src.coding_tools.catalog import search_coding_catalog
+    return search_coding_catalog(query=query, category=category, limit=limit)
+
+
 @app.get("/catalog/categories", summary="Get Catalog Categories")
 def get_catalog_categories():
     items = search_catalog_2026(limit=50)
@@ -200,6 +210,7 @@ def get_catalog_categories():
     if not categories:
         categories = ["Actions & OpenAPI", "Scraping & Data", "Integrations & MCP", "Agents & RAG", "Security & QA"]
     return {"categories": categories}
+
 
 
 # ------------------------------------------------------------------------------
