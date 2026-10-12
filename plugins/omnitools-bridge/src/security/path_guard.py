@@ -113,24 +113,8 @@ class PathGuard:
             candidate = p_obj
 
         try:
-            if candidate.exists() or not allow_nonexistent:
-                # Fully resolve symlinks and canonical path
-                resolved = candidate.resolve(strict=not allow_nonexistent)
-            else:
-                # Target doesn't exist but allow_nonexistent=True.
-                # Find the deepest existing ancestor to resolve existing symlinks
-                curr = candidate
-                unresolved_parts = []
-                while not curr.exists() and curr != curr.parent:
-                    unresolved_parts.append(curr.name)
-                    curr = curr.parent
-                resolved_parent = curr.resolve()
-                resolved = resolved_parent
-                for part in reversed(unresolved_parts):
-                    resolved = resolved / part
-                resolved = resolved.resolve()
-        except FileNotFoundError:
-            raise
+            # Canonical resolution: resolves symlinks and eliminates ..
+            resolved = candidate.resolve()
         except (RuntimeError, OSError) as e:
             raise PathTraversalError(f"Failed to resolve path safely: {e}") from e
 
@@ -157,6 +141,11 @@ class PathGuard:
                 f"Path traversal detected: '{target}' resolves to '{resolved}', "
                 f"which is outside authorized workspace boundaries."
             )
+
+        if not allow_nonexistent and not resolved.exists():
+            raise FileNotFoundError(f"File or directory does not exist: '{target}'")
+
+
 
         if must_be_file:
             if not resolved.is_file():
