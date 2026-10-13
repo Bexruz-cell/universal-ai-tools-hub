@@ -98,6 +98,8 @@ def test_all_15_coding_tools_over_stdio(synthetic_repo: Path):
         assert not (isinstance(payload, dict) and payload.get("ok") is False), (name, payload)
         assert not (isinstance(payload, dict) and payload.get("status") == "error"), (name, payload)
     assert "# synthetic patch" in (root / "module.py").read_text(encoding="utf-8")
+    assert _payload(responses[7])["success"] is True
+    assert _payload(responses[8])["passed"] is True
     assert _payload(responses[10])["tokens"] > 0
     assert _payload(responses[11])["status"] == "success"
 
