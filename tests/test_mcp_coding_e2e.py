@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -10,6 +11,18 @@ import pytest
 
 
 ADAPTER = Path(__file__).resolve().parents[1] / "src" / "adapters" / "mcp_adapter.py"
+REPOSITORY = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True, params=["source", "standalone-package"])
+def adapter_distribution(request, tmp_path, monkeypatch):
+    """Exercise both distributions; the package cannot fall back to repo src."""
+    if request.param == "standalone-package":
+        package = tmp_path / "standalone-plugin"
+        shutil.copytree(REPOSITORY / "plugins" / "omnitools-bridge", package,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        monkeypatch.setattr(sys.modules[__name__], "ADAPTER", package / "run_mcp.py")
+
 CODING_TOOLS = (
     "repo_map", "search_code", "read_symbol", "find_references",
     "dependency_graph", "propose_patch", "apply_patch", "run_targeted_tests",
