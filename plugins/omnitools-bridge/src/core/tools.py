@@ -1,8 +1,7 @@
 """OmniTools Universal AI Bridge - Core Tools Engine
 
 Production-grade implementations of the 5 core tools with hardened SSRF defense,
-AST-sandboxed math evaluator, YouTube transcript extraction, dual-engine crypto ticker,
-and 2026 AI catalog search.
+AST-sandboxed math evaluator, currency conversion, and 2026 AI catalog search.
 """
 
 import ast
@@ -19,7 +18,6 @@ from typing import Dict, Any, List, Optional
 
 import httpx
 from bs4 import BeautifulSoup
-from youtube_transcript_api import YouTubeTranscriptApi
 
 # ==============================================================================
 # 1. HARDENED SSRF DEFENSE ENGINE
@@ -428,125 +426,7 @@ async def deep_search(
 
 
 # ==============================================================================
-# 5. CORE TOOL: YOUTUBE TRANSCRIPT EXTRACTION
-# ==============================================================================
-
-def youtube_transcript(video: str, languages: str = "ru,en") -> Dict[str, Any]:
-    """Extract full subtitles/transcript text from a YouTube video URL or ID."""
-    url_or_id = video.strip()
-    video_id = url_or_id
-    patterns = [
-        r'(?:v=|\/)([0-9A-Za-z_-]{11})(?:[?&]|$)',
-        r'youtu\.be\/([0-9A-Za-z_-]{11})',
-        r'shorts\/([0-9A-Za-z_-]{11})'
-    ]
-    for p in patterns:
-        m = re.search(p, url_or_id)
-        if m:
-            video_id = m.group(1)
-            break
-
-    lang_list = [l.strip() for l in languages.split(",") if l.strip()]
-    try:
-        data = YouTubeTranscriptApi.get_transcript(video_id, languages=lang_list)
-    except Exception:
-        try:
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-            transcript = (
-                transcript_list.find_transcript(lang_list)
-                or transcript_list.find_generated_transcript(lang_list)
-                or transcript_list.find_transcript(['en', 'ru'])
-                or transcript_list.find_generated_transcript(['en', 'ru'])
-            )
-            data = transcript.fetch()
-        except Exception as e:
-            return {"error": f"Subtitles not found for {video_id}: {str(e)}", "video_id": video_id}
-
-    full_text = " ".join([i["text"] for i in data])
-    return {
-        "video_id": video_id,
-        "full_text": full_text,
-        "total_segments": len(data),
-        "sample_segments": data[:50]
-    }
-
-
-# Backwards compatibility alias
-get_youtube_transcript = youtube_transcript
-
-
-# ==============================================================================
-# 6. CORE TOOL: CRYPTO PRICES WITH DUAL FALLBACK
-# ==============================================================================
-
-COINGECKO_MAP = {
-    "btc": "bitcoin",
-    "eth": "ethereum",
-    "sol": "solana",
-    "ton": "the-open-network",
-    "trx": "tron",
-    "bnb": "binancecoin",
-    "doge": "dogecoin",
-    "xrp": "ripple",
-    "usdt": "tether"
-}
-
-
-async def crypto_price(
-    coins: str = "btc,eth,sol,ton",
-    vs_currency: str = "usd"
-) -> Dict[str, Any]:
-    """Fetch live cryptocurrency spot prices with CoinGecko -> Binance fallback."""
-    coin_list = [c.strip().lower() for c in coins.split(",") if c.strip()]
-    ids = [COINGECKO_MAP.get(c, c) for c in coin_list]
-    ids_param = ",".join(ids)
-    vs_curr = vs_currency.lower()
-
-    # 1. Primary engine: CoinGecko API
-    url = f"https://api.coingecko.com/api/v3/simple/price?ids={ids_param}&vs_currencies={vs_curr}&include_24hr_change=true"
-    try:
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            resp = await client.get(url, headers={"Accept": "application/json"})
-            if resp.status_code == 200:
-                raw = resp.json()
-                results = []
-                for sym in coin_list:
-                    cid = COINGECKO_MAP.get(sym, sym)
-                    item = raw.get(cid, {})
-                    results.append({
-                        "symbol": sym.upper(),
-                        "price_usd": float(item.get(vs_curr, 0.0)),
-                        "change_24h": round(float(item.get(f"{vs_curr}_24h_change", 0.0)), 2)
-                    })
-                return {"data": results, "source": "CoinGecko", "currency": vs_curr.upper()}
-    except Exception:
-        pass
-
-    # 2. Resilient fallback engine: Binance Ticker API
-    fallback = []
-    try:
-        async with httpx.AsyncClient(timeout=6.0) as client:
-            for sym in coin_list:
-                ticker = f"{sym.upper()}USDT"
-                resp = await client.get(f"https://api.binance.com/api/v3/ticker/24hr?symbol={ticker}")
-                if resp.status_code == 200:
-                    d = resp.json()
-                    fallback.append({
-                        "symbol": sym.upper(),
-                        "price_usd": float(d.get("lastPrice", 0.0)),
-                        "change_24h": round(float(d.get("priceChangePercent", 0.0)), 2)
-                    })
-        return {"data": fallback, "source": "Binance Ticker", "currency": "USD"}
-    except Exception as e:
-        return {"error": str(e), "data": [], "source": "None"}
-
-
-# Backwards compatibility alias
-get_crypto_prices = crypto_price
-
-
-# ==============================================================================
-# 7. UTILITY: CATALOG 2026 & FOREX CONVERTER
+# 5. UTILITY: CATALOG 2026 & FOREX CONVERTER
 # ==============================================================================
 
 def search_catalog_2026(query: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
@@ -644,5 +524,3 @@ async def convert_fiat(amount: float, from_curr: str, to_curr: str) -> Dict[str,
 # Backward compatibility aliases
 convert_currency = convert_fiat
 search_catalog = search_catalog_2026
-get_youtube_transcript = youtube_transcript
-get_crypto_prices = crypto_price

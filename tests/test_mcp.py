@@ -37,9 +37,7 @@ def test_mcp_tools_list_schema():
     tool_names = [t["name"] for t in TOOLS]
     assert "deep_search" in tool_names
     assert "scrape_web" in tool_names
-    assert "youtube_transcript" in tool_names
     assert "calc_expression" in tool_names
-    assert "crypto_price" in tool_names
 
     for t in TOOLS:
         assert "name" in t

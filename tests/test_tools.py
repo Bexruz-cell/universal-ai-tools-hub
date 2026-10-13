@@ -1,17 +1,14 @@
 """Functional Test Suite: Core Tools Engine
 
-Tests mathematical calculations, crypto tickers, YouTube transcript parsing,
-web scraping, search, and 2026 catalog operations.
+Tests mathematical calculations, web scraping, search, and 2026 catalog operations.
 """
 
 import pytest
 from src.core.tools import (
     calc_expression,
     convert_fiat,
-    crypto_price,
     deep_search,
     search_catalog_2026,
-    youtube_transcript,
 )
 
 
@@ -68,17 +65,3 @@ async def test_convert_fiat_same_currency():
     res = await convert_fiat(100.0, "USD", "USD")
     assert res["converted"] == 100.0
     assert res["rate"] == 1.0
-
-
-@pytest.mark.asyncio
-async def test_crypto_price_structure():
-    res = await crypto_price(coins="btc")
-    assert "data" in res
-    assert len(res["data"]) >= 1
-    assert res["data"][0]["symbol"] == "BTC"
-    assert res["data"][0]["price_usd"] > 0
-
-
-def test_youtube_transcript_invalid_id():
-    res = youtube_transcript(video="invalid_id_000")
-    assert "error" in res
