@@ -69,3 +69,26 @@ def test_mcp_subprocess_stdio_handshake():
     assert "protocolVersion" in resp["result"]
     assert resp["result"]["protocolVersion"] == "2024-11-05"
     assert "serverInfo" in resp["result"]
+
+
+def test_mcp_subprocess_stdio_sync_coding_tool_call():
+    """Synchronous coding tools must not require Windows asyncio loop setup."""
+    proc = subprocess.Popen(
+        [sys.executable, "src/adapters/mcp_adapter.py"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+    )
+    request = {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/call",
+        "params": {"name": "estimate_tokens", "arguments": {"text": "synthetic"}},
+    }
+    stdout, _ = proc.communicate(json.dumps(request) + "\n", timeout=5.0)
+    assert proc.returncode == 0
+    response = json.loads(stdout.strip())
+    assert response["id"] == 2
+    assert json.loads(response["result"]["content"][0]["text"])["tokens"] > 0

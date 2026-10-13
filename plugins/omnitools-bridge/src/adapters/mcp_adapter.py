@@ -10,7 +10,9 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import queue
 import sys
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -688,21 +690,57 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
         )
 
 
+SYNC_CODING_TOOLS = {
+    "repo_map", "search_code", "read_symbol", "find_references",
+    "dependency_graph", "propose_patch", "apply_patch",
+    "run_targeted_tests", "verify_changes", "summarize_context",
+    "estimate_tokens", "git_checkpoint", "diagnose_error",
+    "find_documentation", "search_coding_catalog",
+}
+
+
+def execute_tool_call(name: str, arguments: Dict[str, Any]) -> str:
+    """Execute a tool without creating an event loop when it is synchronous."""
+    if name not in SYNC_CODING_TOOLS:
+        return asyncio.run(handle_call_tool(name, arguments))
+
+    coroutine = handle_call_tool(name, arguments)
+    try:
+        coroutine.send(None)
+    except StopIteration as completed:
+        return str(completed.value)
+    except BaseException:
+        coroutine.close()
+        raise
+    else:
+        coroutine.close()
+        raise RuntimeError(f"Synchronous coding tool yielded unexpectedly: {name}")
+
+
 # ==============================================================================
 # Model Context Protocol JSON-RPC 2.0 Stdio Server
 # ==============================================================================
 
-async def run_stdio_server():
+def run_stdio_server():
     """Cross-platform Model Context Protocol (MCP) JSON-RPC 2.0 stdio server.
 
-    Uses threaded readline to guarantee non-blocking execution across Windows, Linux, and macOS
-    without IOCP handle errors or pipe buffering deadlocks.
+    Uses a dedicated blocking stdin reader and a synchronous transport loop so
+    tool execution is not coupled to Windows asyncio self-pipe initialization.
     """
-    loop = asyncio.get_running_loop()
+    input_queue: queue.Queue[str | None] = queue.Queue()
+
+    def read_stdin() -> None:
+        try:
+            for input_line in sys.stdin:
+                input_queue.put(input_line)
+        finally:
+            input_queue.put(None)
+
+    threading.Thread(target=read_stdin, name="mcp-stdin-reader", daemon=True).start()
 
     while True:
-        line = await loop.run_in_executor(None, sys.stdin.readline)
-        if not line:
+        line = input_queue.get()
+        if line is None:
             break
 
         text = line.strip()
@@ -752,7 +790,7 @@ async def run_stdio_server():
             tool_name = params.get("name")
             tool_args = params.get("arguments", {})
             try:
-                content_text = await handle_call_tool(tool_name, tool_args)
+                content_text = execute_tool_call(tool_name, tool_args)
                 resp = {
                     "jsonrpc": "2.0",
                     "id": msg_id,
@@ -781,7 +819,7 @@ async def run_stdio_server():
 
 def main():
     """CLI entrypoint for MCP stdio server."""
-    asyncio.run(run_stdio_server())
+    run_stdio_server()
 
 
 if __name__ == "__main__":
