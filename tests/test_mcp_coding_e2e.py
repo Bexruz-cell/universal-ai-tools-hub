@@ -64,9 +64,9 @@ def synthetic_repo(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     subprocess.run(["git", "init", "-q"], cwd=workspace, check=True)
-    subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
-                    "commit", "--allow-empty", "-qm", "Initial synthetic commit"],
-                   cwd=workspace, check=True)
+    subprocess.run(["git", "config", "--local", "user.name", "Synthetic Test"], cwd=workspace, check=True)
+    subprocess.run(["git", "config", "--local", "user.email", "test@example.invalid"], cwd=workspace, check=True)
+    subprocess.run(["git", "commit", "--allow-empty", "-qm", "Initial synthetic commit"], cwd=workspace, check=True)
     return workspace
 
 
