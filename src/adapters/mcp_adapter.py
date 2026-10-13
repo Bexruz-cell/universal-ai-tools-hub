@@ -117,9 +117,7 @@ def _authorize_tool_arguments(name: str, arguments: Dict[str, Any], policy: Work
 from src.core.tools import (
     deep_search,
     scrape_web,
-    youtube_transcript,
     calc_expression,
-    crypto_price,
     search_catalog_2026,
     convert_fiat,
 )
@@ -364,18 +362,6 @@ TOOLS: List[Dict[str, Any]] = [
         }
     },
     {
-        "name": "youtube_transcript",
-        "description": "Extract full subtitles/transcript text from any YouTube video URL or ID.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "video": {"type": "string", "description": "YouTube URL or 11-char Video ID"},
-                "languages": {"type": "string", "description": "Priority languages comma-separated (e.g. 'ru,en')", "default": "ru,en"}
-            },
-            "required": ["video"]
-        }
-    },
-    {
         "name": "calc_expression",
         "description": "Safely evaluate mathematical expressions using an AST sandbox (no eval/exec risk).",
         "inputSchema": {
@@ -385,17 +371,6 @@ TOOLS: List[Dict[str, Any]] = [
                 "precision": {"type": "integer", "description": "Decimal places to round", "default": 4}
             },
             "required": ["expression"]
-        }
-    },
-    {
-        "name": "crypto_price",
-        "description": "Get real-time spot prices and 24h change for crypto assets (BTC, ETH, SOL, TON, etc.) with dual-engine fallback.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "coins": {"type": "string", "description": "Comma-separated crypto tickers (e.g. 'btc,eth,sol,ton')", "default": "btc,eth,sol,ton"},
-                "vs_currency": {"type": "string", "description": "Target fiat currency", "default": "usd"}
-            }
         }
     },
     {
@@ -630,24 +605,10 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
             )
             return json.dumps(res, ensure_ascii=False, indent=2)
 
-        elif name in ("youtube_transcript", "get_youtube_transcript"):
-            res = youtube_transcript(
-                video=arguments.get("video", ""),
-                languages=arguments.get("languages", "ru,en")
-            )
-            return json.dumps(res, ensure_ascii=False, indent=2)
-
         elif name == "calc_expression":
             res = calc_expression(
                 expression=arguments.get("expression", ""),
                 precision=arguments.get("precision", 4)
-            )
-            return json.dumps(res, ensure_ascii=False, indent=2)
-
-        elif name in ("crypto_price", "get_crypto_prices"):
-            res = await crypto_price(
-                coins=arguments.get("coins", "btc,eth,sol,ton"),
-                vs_currency=arguments.get("vs_currency", "usd")
             )
             return json.dumps(res, ensure_ascii=False, indent=2)
 

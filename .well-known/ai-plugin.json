@@ -2,8 +2,8 @@
   "schema_version": "v1",
   "name_for_human": "OmniTools SuperHub",
   "name_for_model": "omnitools_superhub",
-  "description_for_human": "Universal web scraper, YouTube transcript extractor, live crypto prices, and currency converter.",
-  "description_for_model": "Universal assistant plugin. Use it to read webpages (/api/v1/web/scrape), extract YouTube video transcripts (/api/v1/youtube/transcript), check real-time crypto prices (/api/v1/crypto/price), convert currencies (/api/v1/finance/convert), and search the 2026 AI tool catalog (/api/v1/catalog).",
+  "description_for_human": "Universal web scraper, math calculator, currency converter, and 2026 AI tool catalog.",
+  "description_for_model": "Universal assistant plugin. Use it to read webpages (/api/v1/web/scrape), evaluate mathematical expressions (/tools/calc), convert currencies (/api/v1/finance/convert), and search the 2026 AI tool catalog (/api/v1/catalog).",
   "auth": {
     "type": "none"
   },

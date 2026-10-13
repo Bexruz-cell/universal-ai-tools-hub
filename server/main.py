@@ -7,7 +7,7 @@ from pathlib import Path
 # Add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from server.routers import catalog, web, youtube, crypto, finance
+from server.routers import catalog, web, finance
 
 app = FastAPI(
     title="ChatGPT SuperActions Hub API",
@@ -30,8 +30,6 @@ app.add_middleware(
 # Register routers
 app.include_router(catalog.router, prefix="/api/v1")
 app.include_router(web.router, prefix="/api/v1")
-app.include_router(youtube.router, prefix="/api/v1")
-app.include_router(crypto.router, prefix="/api/v1")
 app.include_router(finance.router, prefix="/api/v1")
 
 @app.get("/", summary="Root Health Check")

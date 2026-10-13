@@ -49,14 +49,6 @@ def test_finance_convert_same_currency():
     assert data["converted"] == 100.0
     assert data["rate"] == 1.0
 
-def test_crypto_price_endpoint():
-    response = client.get("/api/v1/crypto/price?coins=btc")
-    assert response.status_code in [200, 500]
-    if response.status_code == 200:
-        data = response.json()
-        assert "data" in data
-        assert len(data["data"]) == 1
-        assert data["data"][0]["symbol"] == "BTC"
 
 def test_mcp_tool_handler():
     # Test MCP tool calling logic

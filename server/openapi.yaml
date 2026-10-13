@@ -72,50 +72,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /tools/youtube:
-    post:
-      summary: Extract YouTube Subtitles
-      operationId: api_tool_youtube_tools_youtube_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/YouTubeRequest'
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /tools/crypto:
-    post:
-      summary: Query Crypto Spot Prices
-      operationId: api_tool_crypto_tools_crypto_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CryptoRequest'
-        required: true
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
   /tools/search:
     post:
       summary: Deep Web & Catalog Search
@@ -175,6 +131,52 @@ paths:
           description: Search keyword in repos
           title: Query
         description: Search keyword in repos
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /catalog/coding:
+    get:
+      summary: Search Curated 2026 Top-50 Coding Repositories
+      operationId: get_coding_catalog_catalog_coding_get
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Search keyword in repos
+          title: Query
+        description: Search keyword in repos
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Category filter (A, B, C, D, E or category name)
+          title: Category
+        description: Category filter (A, B, C, D, E or category name)
       - name: limit
         in: query
         required: false
@@ -276,68 +278,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /api/v1/youtube/transcript:
-    get:
-      summary: Extract YouTube Subtitles (Legacy)
-      operationId: api_youtube_legacy_api_v1_youtube_transcript_get
-      parameters:
-      - name: video
-        in: query
-        required: true
-        schema:
-          type: string
-          description: YouTube URL or Video ID
-          title: Video
-        description: YouTube URL or Video ID
-      - name: languages
-        in: query
-        required: false
-        schema:
-          anyOf:
-          - type: string
-          - type: 'null'
-          description: Languages comma-separated
-          default: ru,en
-          title: Languages
-        description: Languages comma-separated
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /api/v1/crypto/price:
-    get:
-      summary: Live Crypto Prices (Legacy)
-      operationId: api_crypto_legacy_api_v1_crypto_price_get
-      parameters:
-      - name: coins
-        in: query
-        required: false
-        schema:
-          type: string
-          description: Tickers comma-separated
-          default: btc,eth,sol,ton
-          title: Coins
-        description: Tickers comma-separated
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/finance/convert:
     get:
       summary: Currency Converter (Legacy)
@@ -416,27 +356,6 @@ components:
           default: RUB
       type: object
       title: ConvertRequest
-    CryptoRequest:
-      properties:
-        coins:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: string
-          - type: 'null'
-          title: Coins
-          description: Coin symbols or list
-          default: btc,eth,sol,ton
-        vs_currency:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Vs Currency
-          description: Target comparison fiat currency
-          default: usd
-      type: object
-      title: CryptoRequest
     HTTPValidationError:
       properties:
         detail:
@@ -513,20 +432,3 @@ components:
       - msg
       - type
       title: ValidationError
-    YouTubeRequest:
-      properties:
-        video:
-          type: string
-          title: Video
-          description: YouTube video URL or 11-char ID
-        languages:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Languages
-          description: Comma-separated language priority list
-          default: ru,en
-      type: object
-      required:
-      - video
-      title: YouTubeRequest

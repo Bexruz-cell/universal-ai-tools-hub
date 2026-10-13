@@ -98,8 +98,6 @@ def test_openapi_specification_validity():
     paths = spec["paths"]
     assert "/tools/calc" in paths
     assert "/tools/scrape" in paths
-    assert "/tools/youtube" in paths
-    assert "/tools/crypto" in paths
     assert "/tools/search" in paths
     assert "/tools/convert" in paths
     assert "/catalog" in paths
@@ -113,7 +111,6 @@ def test_antigravity_direct_tools_execution():
         search_catalog_2026,
         search_catalog,
         convert_currency,
-        get_crypto_prices
     )
     assert calc_expression("40 + 2")["result"] == 42.0
     assert len(search_catalog("agent")) > 0

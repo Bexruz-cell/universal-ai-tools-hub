@@ -21,11 +21,9 @@ if str(root_dir) not in sys.path:
 from src.core.tools import (
     calc_expression,
     convert_fiat,
-    crypto_price,
     deep_search,
     scrape_web,
     search_catalog_2026,
-    youtube_transcript,
 )
 
 app = FastAPI(
@@ -60,14 +58,8 @@ class ScrapeRequest(BaseModel):
     max_length: Optional[int] = Field(8000, description="Max characters to return")
 
 
-class YouTubeRequest(BaseModel):
-    video: str = Field(..., description="YouTube video URL or 11-char ID")
-    languages: Optional[str] = Field("ru,en", description="Comma-separated language priority list")
 
 
-class CryptoRequest(BaseModel):
-    coins: Optional[Union[List[str], str]] = Field("btc,eth,sol,ton", description="Coin symbols or list")
-    vs_currency: Optional[str] = Field("usd", description="Target comparison fiat currency")
 
 
 class SearchRequest(BaseModel):
@@ -112,8 +104,8 @@ def get_ai_plugin_manifest():
         "schema_version": "v1",
         "name_for_human": "OmniTools SuperHub",
         "name_for_model": "omnitools_superhub",
-        "description_for_human": "Universal tools for web reading, YouTube analysis, math calculations, and crypto tickers.",
-        "description_for_model": "Access web scraping, YouTube transcripts, math calculator, crypto prices, and currency conversion.",
+        "description_for_human": "Universal tools for web reading, math calculations, and currency conversion.",
+        "description_for_model": "Access web scraping, math calculator, and currency conversion.",
         "auth": {"type": "none"},
         "api": {"type": "openapi", "url": "http://localhost:8000/openapi.json"}
     }
@@ -145,26 +137,8 @@ async def api_tool_scrape(req: ScrapeRequest):
     return res
 
 
-@app.post("/tools/youtube", summary="Extract YouTube Subtitles")
-def api_tool_youtube(req: YouTubeRequest):
-    res = youtube_transcript(video=req.video, languages=req.languages or "ru,en")
-    if "error" in res:
-        raise HTTPException(status_code=404, detail=res["error"])
-    return res
 
 
-@app.post("/tools/crypto", summary="Query Crypto Spot Prices")
-async def api_tool_crypto(req: CryptoRequest):
-    coins_arg = req.coins
-    if isinstance(coins_arg, list):
-        coins_arg = ",".join(coins_arg)
-    elif not coins_arg:
-        coins_arg = "btc,eth,sol,ton"
-
-    res = await crypto_price(coins=coins_arg, vs_currency=req.vs_currency or "usd")
-    if "error" in res and not res.get("data"):
-        raise HTTPException(status_code=502, detail=res["error"])
-    return res
 
 
 @app.post("/tools/search", summary="Deep Web & Catalog Search")
@@ -225,25 +199,8 @@ async def api_scrape_legacy(
     return res
 
 
-@app.get("/api/v1/youtube/transcript", summary="Extract YouTube Subtitles (Legacy)")
-def api_youtube_legacy(
-    video: str = Query(..., description="YouTube URL or Video ID"),
-    languages: Optional[str] = Query("ru,en", description="Languages comma-separated")
-):
-    res = youtube_transcript(video=video, languages=languages or "ru,en")
-    if "error" in res:
-        raise HTTPException(status_code=404, detail=res["error"])
-    return res
 
 
-@app.get("/api/v1/crypto/price", summary="Live Crypto Prices (Legacy)")
-async def api_crypto_legacy(
-    coins: str = Query("btc,eth,sol,ton", description="Tickers comma-separated")
-):
-    res = await crypto_price(coins=coins)
-    if "error" in res and not res.get("data"):
-        raise HTTPException(status_code=500, detail=res["error"])
-    return res
 
 
 @app.get("/api/v1/finance/convert", summary="Currency Converter (Legacy)")
