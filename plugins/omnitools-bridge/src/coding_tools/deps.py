@@ -45,14 +45,17 @@ class WorkspaceGraph:
 
 def _normalize_path(path: Union[str, Path], relative_to: Optional[Union[str, Path]] = None) -> str:
     """Normalize path to POSIX forward slashes relative to workspace root."""
-    p = Path(path).resolve()
+    p = Path(path)
     if relative_to:
         root = Path(relative_to).resolve()
+        if not p.is_absolute():
+            p = root / p
+        p = p.resolve()
         try:
             return p.relative_to(root).as_posix()
         except ValueError:
             pass
-    return p.as_posix()
+    return p.resolve().as_posix()
 
 
 def is_test_file(path_str: str) -> bool:

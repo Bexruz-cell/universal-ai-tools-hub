@@ -861,7 +861,9 @@ def git_checkpoint(
             include_uncommitted=include_uncommitted,
             message=message,
         )
-        return meta.model_dump()
+        d = meta.model_dump()
+        d["status"] = "success"
+        return d
 
     elif act in ("diff", "inspect"):
         res = mgr.inspect_diff(
@@ -870,7 +872,9 @@ def git_checkpoint(
             paths=file_paths,
             max_lines=max_lines,
         )
-        return res.model_dump()
+        d = res.model_dump()
+        d["status"] = "success"
+        return d
 
     elif act == "rollback":
         if not checkpoint_id:
@@ -881,10 +885,15 @@ def git_checkpoint(
             file_paths=file_paths,
             force=force,
         )
-        return res.model_dump()
+        d = res.model_dump()
+        d["status"] = "success" if res.success else "error"
+        return d
 
     elif act == "list":
-        return {"checkpoints": [c.model_dump() for c in mgr.list_checkpoints(limit=limit)]}
+        chks = [c.model_dump() for c in mgr.list_checkpoints(limit=limit)]
+        for c in chks:
+            c["id"] = c.get("checkpoint_id")
+        return {"status": "success", "checkpoints": chks}
 
     elif act == "get":
         if not checkpoint_id:
@@ -892,13 +901,15 @@ def git_checkpoint(
         chk = mgr.get_checkpoint(checkpoint_id)
         if not chk:
             raise CheckpointNotFoundError(f"Checkpoint '{checkpoint_id}' not found.")
-        return chk.model_dump()
+        d = chk.model_dump()
+        d["status"] = "success"
+        return d
 
     elif act == "delete":
         if not checkpoint_id:
             raise ValueError("action='delete' requires 'checkpoint_id'.")
         success = mgr.delete_checkpoint(checkpoint_id)
-        return {"checkpoint_id": checkpoint_id, "deleted": success}
+        return {"status": "success" if success else "error", "checkpoint_id": checkpoint_id, "deleted": success}
 
     else:
         raise ValueError(

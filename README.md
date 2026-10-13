@@ -7,11 +7,21 @@
 [![MCP Protocol](https://img.shields.io/badge/MCP-Protocol_2024--11--05-blueviolet.svg)](https://modelcontextprotocol.io)
 [![Codex Marketplace](https://img.shields.io/badge/OpenAI_Codex-Marketplace_Verified-green.svg)](https://openai.com)
 [![Antigravity](https://img.shields.io/badge/Google_Antigravity-Native_Plugin-orange.svg)](plugin.json)
-[![Tests](https://img.shields.io/badge/Tests-189%20Passed%20(100%25)-success.svg)](https://pytest.org)
+[![CI](https://github.com/Bexruz-cell/universal-ai-tools-hub/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Bexruz-cell/universal-ai-tools-hub/actions/workflows/ci.yml)
 [![Catalog](https://img.shields.io/badge/Coding_Catalog-50%20Curated%20Repos-blue.svg)](catalog/top_50_coding_repositories_2026.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Единый универсальный мост инструментов разработки (Quad-Target Compatibility), сертифицированный для OpenAI Codex, Google Antigravity, Anthropic Claude и ChatGPT Actions.**
+**Инструменты разработки через MCP для совместимых клиентов. Подключение и доступ к workspace настраиваются в каждом клиенте отдельно.**
+
+### Пакет 2.1.1
+
+Исправлен MCP stdio transport для синхронных coding tools; пакетные копии
+Git checkpoints и анализа зависимостей синхронизированы с основным кодом.
+CI проверяет все 15 coding tools через subprocess MCP как из основного дерева,
+так и из изолированной копии пакета, включая запись в synthetic workspace,
+Git checkpoint, EOF и запреты внешних путей. Матрица: Windows/Linux, Python 3.10–3.13.
+Версия опубликованного private plugin — 2.1.1; установка обновления и разрешённые
+корни workspace определяются клиентом. CI не подтверждает установку в клиенте.
 
 [English Overview](#-english-overview) · [Архитектура](#-архитектура-экосистемы) · [15 Инструментов Разработки](#-каталог-15-инструментов-разработки) · [Оптимизация Токенов](#-оптимизация-контекста-и-экономия-токенов) · [Модель Безопасности](#-строгая-модель-безопасности-и-ast-песочница) · [Установка](#-быстрый-старт-и-подключение) · [ТОП-50 Каталог](catalog/top_50_coding_repositories_2026.md)
 

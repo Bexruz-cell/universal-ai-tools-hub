@@ -1,6 +1,6 @@
 {
   "name": "omnitools-bridge",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Universal AI Coding Hub: 15 real MCP coding tools for repository mapping, code search, symbol analysis, references, dependency analysis, safe patch proposals, tests, verification, context optimization, token estimation, Git checkpoints, diagnostics, documentation lookup, and coding catalog search. Filesystem access is deny-by-default and scoped to process-authorized workspace roots.",
   "author": {
     "name": "Bexruz stark (@Bexruz-cell)",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://antigravity.google/schemas/plugin.json",
   "name": "omnitools-bridge",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "displayName": "OmniTools Universal AI Bridge",
   "description": "Universal AI Coding Hub 2.1.0 for Antigravity and local MCP clients: 15 real coding tools with deny-by-default workspace authorization.",
   "author": "Bexruz stark (@Bexruz-cell)",
