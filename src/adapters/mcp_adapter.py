@@ -690,6 +690,38 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> str:
         )
 
 
+SYNC_CODING_TOOLS = {
+    "repo_map", "search_code", "read_symbol", "find_references",
+    "dependency_graph", "propose_patch", "apply_patch",
+    "run_targeted_tests", "verify_changes", "summarize_context",
+    "estimate_tokens", "git_checkpoint", "diagnose_error",
+    "find_documentation", "search_coding_catalog",
+}
+
+
+def execute_tool_call(name: str, arguments: Dict[str, Any]) -> str:
+    """Execute a tool without creating an event loop when it is synchronous.
+
+    The 15 coding tools do not await anything. Advancing their coroutine once
+    executes them synchronously and avoids Windows loop self-pipe creation.
+    Legacy network tools still use the normal asyncio runner.
+    """
+    if name not in SYNC_CODING_TOOLS:
+        return asyncio.run(handle_call_tool(name, arguments))
+
+    coroutine = handle_call_tool(name, arguments)
+    try:
+        coroutine.send(None)
+    except StopIteration as completed:
+        return str(completed.value)
+    except BaseException:
+        coroutine.close()
+        raise
+    else:
+        coroutine.close()
+        raise RuntimeError(f"Synchronous coding tool yielded unexpectedly: {name}")
+
+
 # ==============================================================================
 # Model Context Protocol JSON-RPC 2.0 Stdio Server
 # ==============================================================================
@@ -763,7 +795,7 @@ def run_stdio_server():
             tool_name = params.get("name")
             tool_args = params.get("arguments", {})
             try:
-                content_text = asyncio.run(handle_call_tool(tool_name, tool_args))
+                content_text = execute_tool_call(tool_name, tool_args)
                 resp = {
                     "jsonrpc": "2.0",
                     "id": msg_id,
